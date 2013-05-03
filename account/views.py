@@ -26,8 +26,8 @@ def index(request,sig):
                 t = k
                 break
 
-        if hasattr(request,'raw_post_data'):
-                info = request.raw_post_data
+        if hasattr(request,'body'):
+                info = request.body
         elif t is not None:
                 info = t
         else:

@@ -1,10 +1,17 @@
 from django.db import models
 
+class region(models.Model):
+    name = models.CharField(max_length=32,primary_key=True)
+    url = models.CharField(max_length=256)
+    
+    def __unicode__(self):
+        return "region"
+
 class base(models.Model):
         id = models.AutoField(primary_key=True)
         userid = models.CharField(max_length=32,unique=True)
         pwd = models.CharField(max_length=32)
-        region = models.CharField(max_length=16)
+        region_name = models.CharField(max_length=16)
         ip = models.CharField(max_length=16)
         session = models.CharField(max_length=16)
         date_create = models.DateTimeField()
