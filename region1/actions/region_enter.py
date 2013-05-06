@@ -15,11 +15,7 @@ from account.models import base
 def do(info):
         """
         login test
-        >>> import json
-        >>> o=json.loads('{"code":"login","ver":1}')
-        >>> o['ver'] == 1
-        True
-        >>> from actions.register import do as register
+        >>> from account.actions.register import do as register
         >>> reginfo={'userid':'1','pwd':'123','name':'tester','ip':'127.0.0.1'}
         >>> ret = register(reginfo)
         >>> info={'userid':'1','pwd':'123','ver':'1','ip':'127.0.0.1','region':'region1'}
@@ -31,7 +27,6 @@ def do(info):
         >>> ret['rc'] == RetCode.PWD_ERROR
         True
         """
-        print("start")
         ret = dict()
         
         obj = base.objects.filter(userid=info['userid'])

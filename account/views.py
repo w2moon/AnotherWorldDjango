@@ -12,8 +12,8 @@ SECRET_KEY = settings.SECRET_KEY
 
 actions = {}
 path = os.path.dirname(__file__)
-packname = "actions."#os.path.basename(path)+".actions."
-for action in glob.glob(path+"/../actions/*.py"):
+packname = os.path.basename(path)+".actions."
+for action in glob.glob(path+"/actions/*.py"):
         name = os.path.splitext(os.path.basename(action))[0]
         if name != "__init__":
                 exec("import "+packname+name)
@@ -40,7 +40,8 @@ def index(request,sig):
                 info['ip'] =  request.META['HTTP_X_FORWARDED_FOR']
         else:
                 info['ip'] = request.META['REMOTE_ADDR']
-        
+        print("!!!")
         ret = actions[info['code']](info)
+        print("222")
         ret = json.dumps(ret)
         return HttpResponse(ret)
