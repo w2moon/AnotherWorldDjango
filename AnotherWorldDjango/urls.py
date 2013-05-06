@@ -11,4 +11,5 @@ urlpatterns = patterns('',
     #url(r'^admin/', include(admin.site.urls)),
     
     url(r'^anotherworld/account/',include('account.urls')),
+    url(r'^anotherworld/region1/',include('region1.urls')),
 )

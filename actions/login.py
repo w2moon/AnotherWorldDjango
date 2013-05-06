@@ -6,41 +6,55 @@ Created on Apr 21, 2013
 from django.utils import timezone
 from django.core.cache import cache
 
+
 import random
 
+from retcode import RetCode
 from account.models import base
 
 def do(info):
         """
         login test
-        >>> info={'userid':'1','pwd':'123','ip':'127.0.0.1'}
+        >>> import json
+        >>> o=json.loads('{"code":"login","ver":1}')
+        >>> o['ver'] == 1
+        True
+        >>> from actions.register import do as register
+        >>> reginfo={'userid':'1','pwd':'123','name':'tester','ip':'127.0.0.1'}
+        >>> ret = register(reginfo)
+        >>> info={'userid':'1','pwd':'123','ver':'1','ip':'127.0.0.1','region':'region1'}
         >>> ret = do(info)
-        >>> ret['result']
+        >>> ret['rc'] == RetCode.OK
         True
         >>> info['pwd']='222'
         >>> ret = do(info)
-        >>> ret['result']
-        False
+        >>> ret['rc'] == RetCode.PWD_ERROR
+        True
         """
+        print("start")
+        ret = dict()
+        
         obj = base.objects.filter(userid=info['userid'])
         if len(obj) == 0 :
-                obj = base(userid=info['userid'],pwd=info['pwd'],date_create=timezone.now())
+            ret['rc'] = RetCode.USERID_NOTEXIST
+            return ret
         else:
             obj = obj[0]
 
-        ret = dict()
-        if obj.pwd == info['pwd']:
-                ret['result'] = True
-                ret['region'] = obj.region
-        else:
-                ret['result'] = False
-
+        if obj.pwd != info['pwd']:
+            ret['rc'] = RetCode.PWD_ERROR;
+            return ret
+        
+        ret['rc'] = RetCode.OK;
+        ret['region'] = info['region']
         ret['session'] = random.randint(0,1000000)
         cache.set('user'+obj.userid,ret['session'],60*10)
         obj.session = ret['session']
         obj.date_lastlogin = timezone.now()
+        obj.region = info['region']
         obj.ip = info['ip']
         obj.save()
         ret['id'] = obj.id
+        ret['name'] = obj.name
 
         return ret

@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ea&t_g&+tzq2wd1x=#ju)fkib55x^vck)n0fovh$9#0jjgt)j3'
+SECRET_KEY = 'ebv2*u)qdlk+u9wdtl-1cl6ct5gfj-3wu$!6of*gjy+f2zsc@b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django_nose',
     
     'account',
+    'region1',
 )
 
 CACHES = {
