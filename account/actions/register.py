@@ -11,10 +11,7 @@ from retcode import RetCode
 def do(info):
         """
         register test
-        >>> info={'userid':'2','pwd':'123','name':'tester','ip':'127.0.0.1'}
-        >>> ret = do(info)
-        >>> ret['rc'] == RetCode.NAME_EXIST
-        True
+        >>> info={'userid':'2','pwd':'123','ip':'127.0.0.1'}
         >>> info['userid'] = '1';
         >>> ret = do(info)
         >>> ret['rc'] == RetCode.USERID_EXIST
@@ -29,23 +26,22 @@ def do(info):
         ret = dict()
                    
         objby_userid = base.objects.filter(userid=info['userid'])
-        objby_name = base.objects.filter(name=info['name'])
         
         if len(objby_userid) != 0:
             ret['rc'] = RetCode.USERID_EXIST;
-        elif len(objby_name) != 0:
-            ret['rc'] = RetCode.NAME_EXIST;
         else:
             ret['rc'] = RetCode.OK
             obj = base(userid=info['userid'],
                        pwd=info['pwd'],
-                       name=info['name'],
-                       regip=['ip'],
-                       ip=['ip'],
+                       regip=info['ip'],
+                       ip=info['ip'],
                        status=base.STATUS_NORMAL,
                        date_lastlogin=timezone.now(),
                        date_create=timezone.now())
             obj.save()
+            
+        ret['userid'] = info['userid']
+        ret['pwd'] = info['pwd']        
         
 
         return ret

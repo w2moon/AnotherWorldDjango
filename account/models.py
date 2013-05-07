@@ -16,8 +16,7 @@ class region(models.Model):
 class base(models.Model):
         id = models.AutoField(primary_key=True)
         userid = models.CharField(max_length=32,unique=True)
-        pwd = models.CharField(max_length=32)
-        name = models.CharField(max_length=32,unique=True) 
+        pwd = models.CharField(max_length=32) 
         status = models.IntegerField(max_length=1) #0normal 1banned
         region = models.CharField(max_length=16)
         ip = models.CharField(max_length=16)

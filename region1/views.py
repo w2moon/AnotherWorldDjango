@@ -7,6 +7,10 @@ import json
 import glob
 import os
 
+from django.core.cache import cache
+
+from account.models import base
+
 from django.conf import settings
 SECRET_KEY = settings.SECRET_KEY
 
@@ -21,6 +25,12 @@ for action in glob.glob(path+"/actions/*.py"):
                 actions[name] = eval("reload("+packname+name+")").do
 @csrf_exempt
 def index(request,sig):
+        """
+        region view test
+        >>> a = cache.set("hello",1111)
+        >>> cache.get("hello") == 1111
+        True
+        """
         for k in request:
                 t = k
                 break
@@ -36,10 +46,19 @@ def index(request,sig):
                 return HttpResponse('{"rc":1000}')
 
         info = json.loads(info)
-        if request.META.has_key('HTTP_X_FORWARDED_FOR'):
-                info['ip'] =  request.META['HTTP_X_FORWARDED_FOR']
-        else:
-                info['ip'] = request.META['REMOTE_ADDR']
+        
+        #because lru ,this need to get session from mysql
+        
+            
+        session = cache.get('user'+info['userid'])
+        if session != info['session']:
+            obj = base.objects.filter(userid=info['userid'])
+            if len(obj) == 0 or obj.session != info['session']:
+                return HttpResponse('{"rc":2005}')
+            
+        cache.set('user'+info['userid'],info['session'],settings.CACHE_TIME)
+        
+        
         ret = actions[info['code']](info)
 
         ret = json.dumps(ret)

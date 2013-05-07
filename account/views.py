@@ -40,8 +40,8 @@ def index(request,sig):
                 info['ip'] =  request.META['HTTP_X_FORWARDED_FOR']
         else:
                 info['ip'] = request.META['REMOTE_ADDR']
-        print("!!!")
+   
         ret = actions[info['code']](info)
-        print("222")
+       
         ret = json.dumps(ret)
         return HttpResponse(ret)

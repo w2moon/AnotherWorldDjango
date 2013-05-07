@@ -10,9 +10,13 @@ from retcode import RetCode
 def do(info):
         """
         region_list test
-        >>> info={'code':'region_list','ip':'127.0.0.1'}
+        >>> r1 = region(name="region1",url="url",status=1,recommend=0)
+        >>> r1.save()
+        >>> info={'code':'region_list'}
         >>> ret = do(info)
         >>> ret['rc'] == RetCode.OK
+        True
+        >>> ret['regions']['region1']['url'] == "url"
         True
         """
         
@@ -20,9 +24,10 @@ def do(info):
         ret['rc'] = RetCode.OK
         regions = region.objects.all()
         
-        ret['regions'] = []
+        ret['regions'] = {}
         for r in regions:
-            ret['regions'].push({'name':r.name,'url':r.url,'status':r.status,'recommend':r.recommend})
+            ret['regions'][r.name] = {'url':r.url,'status':r.status,'recommend':r.recommend}
+            #ret['regions'].append({'name':r.name,'url':r.url,'status':r.status,'recommend':r.recommend})
             
         
 

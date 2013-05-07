@@ -26,6 +26,8 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CACHE_TIME = 60*10
+
 
 # Application definition
 
