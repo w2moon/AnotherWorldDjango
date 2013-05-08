@@ -2,6 +2,11 @@ from django.db import models
 
 from django.core import serializers
 
+import time
+
+import re
+isdate = re.compile(r'^date')
+
 class role(models.Model):
     userid = models.CharField(max_length=32,primary_key=True)
     name = models.CharField(max_length=32,unique=True)
@@ -33,7 +38,10 @@ class role(models.Model):
     def packforself(self):
         player = {}
         for k in self._meta.fields:
-            player[k.name] = getattr(self,k.name)
+            if isdate.match(k.name):
+                player[k.name] = time.mktime(getattr(self,k.name).timetuple())
+            else: 
+                player[k.name] = getattr(self,k.name)
             
         player['equipments'] = []
         for equip in self.equipment_set.all():

@@ -27,7 +27,7 @@ def do(info):
                    
         objby_userid = base.objects.filter(userid=info['userid'])
         
-        if len(objby_userid) != 0:
+        if objby_userid.count() != 0:
             ret['rc'] = RetCode.USERID_EXIST;
         else:
             ret['rc'] = RetCode.OK

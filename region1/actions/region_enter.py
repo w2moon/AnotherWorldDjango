@@ -4,7 +4,6 @@ Created on Apr 21, 2013
 @author: w2moon
 '''
 from django.utils import timezone
-from django.core.cache import cache
 
 
 from retcode import RetCode
@@ -35,9 +34,8 @@ def do(info):
     >>> r.delete()
     """
     ret = dict()
-    
     obj = role.objects.filter(userid=info['userid'])
-    if len(obj) == 0 :
+    if obj.count() == 0 :
         ret['rc'] = RetCode.PLAYER_NOTEXIST
         return ret
     else:
@@ -45,7 +43,9 @@ def do(info):
        
        
     obj.date_lastenter = timezone.now()
+    obj.save()
     
 
     ret['rc'] = RetCode.OK
+    ret['player'] = obj.packforself()
     return ret

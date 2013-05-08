@@ -30,7 +30,7 @@ def do(info):
         ret = dict()
         
         obj = base.objects.filter(userid=info['userid'])
-        if len(obj) == 0 :
+        if obj.count() == 0 :
             ret['rc'] = RetCode.USERID_NOTEXIST
             return ret
         else:

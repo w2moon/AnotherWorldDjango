@@ -42,17 +42,17 @@ def do(info):
     
     
     obj = role.objects.filter(userid=info['userid'])
-    if len(obj) != 0 :
+    if obj.count() != 0 :
         ret['rc'] = RetCode.PLAYER_EXIST
         return ret
     
     obj = role.objects.filter(name=info['name'])
-    if len(obj) != 0 :
+    if obj.count() != 0 :
         ret['rc'] = RetCode.NAME_EXIST
         return ret
        
     baseinfo = base.objects.filter(userid=info['userid'])
-    if len(baseinfo) == 0:
+    if baseinfo.count() == 0:
         ret['rc'] = RetCode.USERID_NOTEXIST
         return ret
     else:
