@@ -86,6 +86,10 @@ class soul(models.Model):
     
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
+
+    skillexp = models.IntegerField(max_length=4,default=0)
+    skilllevel = models.IntegerField(max_length=4,default=0)
+    
     
     def pack(self):
         t = {}
@@ -107,11 +111,19 @@ class traveller(models.Model):
     
     view = models.IntegerField(max_length=1,default=2) #VIEW_SELF
     
-    skillid = models.IntegerField(max_length=4,default=0)
-    talentid = models.IntegerField(max_length=4,default=0)
+    skill1id = models.IntegerField(max_length=4,default=0)
+    skill1exp = models.IntegerField(max_length=4,default=0)
+    skill1level = models.IntegerField(max_length=4,default=0)
+    
+    skill2id = models.IntegerField(max_length=4,default=0)
+    skill2exp = models.IntegerField(max_length=4,default=0)
+    skill2level = models.IntegerField(max_length=4,default=0)
+    
+    nature = models.IntegerField(max_length=4,default=0)
     
     
     soulid = models.IntegerField(max_length=4,default=0)
+    
     weaponid = models.IntegerField(max_length=4,default=0)
     clothid = models.IntegerField(max_length=4,default=0)
     trinketid = models.IntegerField(max_length=4,default=0)
