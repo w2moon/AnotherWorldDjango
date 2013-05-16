@@ -1,6 +1,5 @@
 from django.db import models
 
-from django.core import serializers
 
 import time
 
@@ -69,6 +68,7 @@ class equipment(models.Model):
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
     
+    
     def pack(self):
         t = {}
         for k in self._meta.fields:
@@ -86,6 +86,7 @@ class soul(models.Model):
     
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
+    
 
     skillexp = models.IntegerField(max_length=4,default=0)
     skilllevel = models.IntegerField(max_length=4,default=0)
@@ -108,6 +109,7 @@ class traveller(models.Model):
     name = models.CharField(max_length=32)
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
+    
     
     view = models.IntegerField(max_length=1,default=2) #VIEW_SELF
     
