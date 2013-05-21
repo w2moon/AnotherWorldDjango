@@ -87,7 +87,6 @@ class soul(models.Model):
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
     
-
     skillexp = models.IntegerField(max_length=4,default=0)
     skilllevel = models.IntegerField(max_length=4,default=0)
     
