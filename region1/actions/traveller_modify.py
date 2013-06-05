@@ -15,7 +15,7 @@ role = eval("reload("+appname+".models)").role
 def do(info):
 	"""
 	traveller create
-	>>> info={'code':'traveller_create','userid':'5','img':'tester'}
+	>>> info={'code':'traveller_modify','userid':'5','id':1,'name':'traveller','view':traveller.VIEW_ALL}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.USERID_NOTEXIST
     True
@@ -27,12 +27,15 @@ def do(info):
 		ret['rc'] = RetCode.PLAYER_NOTEXIST
 		return ret
 	
-	traveller = obj.traveller_set.create()
+	traveller = obj.traveller_set.filter(id=info['id'])
+	if traveller.count() != 0:
+		ret['rc'] = RetCode.TRAVELLER_NOTEXIST
+		return ret
 	
-	traveller.img = info['img']
+	traveller.name = info['name']
+	traveller.view = info['view']
 	
 	traveller.save()
 	
 	ret['rc'] = RetCode.OK
-	ret['traveller'] = traveller.pack()
 	return ret
