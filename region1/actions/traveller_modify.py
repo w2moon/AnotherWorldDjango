@@ -23,14 +23,18 @@ def do(info):
 	ret = dict()
 	
 	obj = role.objects.filter(userid=info['userid'])
-	if obj.count() != 0 :
+	if obj.count() == 0 :
 		ret['rc'] = RetCode.PLAYER_NOTEXIST
 		return ret
+	else:
+		obj = obj[0]
 	
 	traveller = obj.traveller_set.filter(id=info['id'])
-	if traveller.count() != 0:
+	if traveller.count() == 0:
 		ret['rc'] = RetCode.TRAVELLER_NOTEXIST
 		return ret
+	else:
+		traveller = traveller[0]
 	
 	traveller.name = info['name']
 	traveller.view = info['view']
