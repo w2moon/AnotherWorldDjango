@@ -5,7 +5,7 @@ Created on Apr 21, 2013
 '''
 
 from account.models import region
-from retcode import RetCode
+from data.retcode import RetCode
 
 def do(info):
         """

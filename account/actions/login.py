@@ -9,7 +9,7 @@ from django.conf import settings
 
 import random
 
-from retcode import RetCode
+from data.retcode import RetCode
 from account.models import base
 
 def do(info):

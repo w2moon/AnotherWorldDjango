@@ -6,7 +6,7 @@ Created on Apr 21, 2013
 from django.utils import timezone
 from account.models import base
 
-from retcode import RetCode
+from data.retcode import RetCode
 
 arr = __file__.split('/')
 appname = arr[len(arr)-3]
