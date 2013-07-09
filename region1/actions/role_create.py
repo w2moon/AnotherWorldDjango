@@ -22,7 +22,7 @@ role = eval("reload("+appname+".models)").role
 def do(info):
     """
     role create
-    >>> info={'code':'role_create','userid':'5','name':'tester'}
+    >>> info={'code':'role_create','userid':'5','name':'tester','img':''}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.USERID_NOTEXIST
     True

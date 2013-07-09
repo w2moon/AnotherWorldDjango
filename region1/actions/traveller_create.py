@@ -15,7 +15,7 @@ role = eval("reload("+appname+".models)").role
 def do(info):
 	"""
 	traveller create
-	>>> info={'code':'traveller_create','userid':'5','img':'tester'}
+	>>> info={'code':'traveller_create','userid':'5','gender':0,'age':0,'img':'tester'}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.USERID_NOTEXIST
     True
@@ -32,6 +32,8 @@ def do(info):
 	traveller = obj.traveller_set.create()
 	
 	traveller.img = info['img']
+	traveller.gender = info['gender']
+	traveller.age = info['age']
 	
 	traveller.save()
 	

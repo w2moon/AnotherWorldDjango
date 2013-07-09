@@ -42,6 +42,8 @@ class role(models.Model):
             else: 
                 player[k.name] = getattr(self,k.name)
             
+        
+            
         player['equipments'] = []
         for equip in self.equipment_set.all():
             player['equipments'].append(equip.pack())
@@ -59,6 +61,8 @@ class role(models.Model):
     def __unicode__(self):
         return "role userid:%s name:%s" % (self.userid,self.name)
     
+    
+
     
 class equipment(models.Model):
     id = models.AutoField(primary_key=True)
@@ -84,6 +88,8 @@ class soul(models.Model):
     owner = models.ForeignKey(role)
     baseid = models.IntegerField(max_length=4,default=0)
     
+    star = models.IntegerField(max_length=4,default=1)
+    
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
     
@@ -106,8 +112,15 @@ class traveller(models.Model):
     owner = models.ForeignKey(role)
     
     name = models.CharField(max_length=32)
+    gender = models.IntegerField(max_length=1,default=0)
+    age = models.IntegerField(max_length=1,default=0)
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
+    
+    MaxHP = models.IntegerField(max_length=4,default=0)
+    Attack = models.IntegerField(max_length=4,default=0)
+    Defense = models.IntegerField(max_length=4,default=0)
+    Heal = models.IntegerField(max_length=4,default=0)
     
     
     view = models.IntegerField(max_length=1,default=2) #VIEW_SELF
@@ -135,12 +148,23 @@ class traveller(models.Model):
     VIEW_FRIEND = 1
     VIEW_ALL = 2
     
+    MALE = 0
+    FEMAIL = 1
+    
+    CHILD = 0
+    YOUNG = 1
+    ADULT = 2
+    ELDER = 3
     def pack(self):
         t = {}
         for k in self._meta.fields:
             if k.name != 'owner': 
                 t[k.name] = getattr(self,k.name)
+                
+      
+            
         return t
     
     def __unicode__(self):
         return "traveller %s" % (self.name)
+    
