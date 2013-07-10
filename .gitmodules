@@ -1,0 +1,3 @@
+[submodule "world_data"]
+	path = world_data
+	url = https://github.com/w2moon/AnotherWorldData.git
