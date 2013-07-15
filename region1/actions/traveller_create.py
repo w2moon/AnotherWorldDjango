@@ -24,7 +24,7 @@ def do(info):
 	
 	obj = role.objects.filter(userid=info['userid'])
 	if obj.count() == 0 :
-		ret['rc'] = RetCode.PLAYER_NOTEXIST
+		ret['rc'] = RetCode.USERID_NOTEXIST
 		return ret
 	else:
 		obj = obj[0]
