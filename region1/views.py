@@ -47,13 +47,13 @@ def index(request,sig):
 
         info = json.loads(info)
         
-        session = cache.get('user'+info['userid'])
+        session = cache.get('ol:'+info['userid'])
         if session != info['session']:
             obj = base.objects.filter(userid=info['userid'])
             if obj.count() == 0 or obj.session != info['session']:
                 return HttpResponse('{"rc":2005}')
             
-        cache.set('user'+info['userid'],info['session'],settings.CACHE_TIME)
+        cache.set('ol:'+info['userid'],info['session'],settings.CACHE_TIME)
         
         
         ret = actions[info['code']](info)

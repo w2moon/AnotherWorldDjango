@@ -42,7 +42,7 @@ def do(info):
         ret['rc'] = RetCode.OK;
         ret['region'] = info['region']
         ret['session'] = random.randint(0,1000000)
-        cache.set('user'+obj.userid,ret['session'],settings.CACHE_TIME)
+        cache.set('ol:'+obj.userid,ret['session'],settings.CACHE_TIME)
         obj.session = ret['session']
         obj.date_lastlogin = timezone.now()
         obj.region = info['region']

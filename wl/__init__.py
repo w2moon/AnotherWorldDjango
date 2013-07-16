@@ -10,7 +10,7 @@ wl test
 
 import csv
 import string
-import arc4random
+import random
 
 def tonumber(v):
     if type(v) != str or v == "":
@@ -43,9 +43,21 @@ def csv_idmap(filepath):
     cf.close()
     return ret
 
+def csv_cfg(filepath):
+    ret = {}
+    cf = file(filepath,'rb')
+    reader = csv.reader(cf)
+    for line in reader:
+        ret[line[0]] = tonumber(line[1])
+                
+    cf.close()
+    return ret
 
-def seed(s):
-    return arc4random.seed(s)
-
-def rand():
-    return arc4random.random()
+def get_rand(dicobj):
+    r = random.random()
+    v = 0
+    for k in dicobj:
+        v = v + dicobj[k]['rate']
+        if r < v:
+            return dicobj[k]
+    return None

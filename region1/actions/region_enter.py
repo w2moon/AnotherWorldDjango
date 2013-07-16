@@ -10,9 +10,8 @@ from data.retcode import RetCode
 
 arr = __file__.split('/')
 appname = arr[len(arr)-3]
-
-exec("import "+appname)
-role = eval("reload("+appname+".models)").role
+utils = None
+exec("from "+appname+" import utils")
 
 
  
@@ -26,7 +25,7 @@ def do(info):
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.PLAYER_NOTEXIST
     True
-    >>> r = role(id='1',userid='1',name='tester',date_lastupdate=timezone.now(),date_lastenter=timezone.now(),date_create=timezone.now())
+    >>> r = utils.create_role('1','1','tester')
     >>> r.save()
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.OK
@@ -34,18 +33,16 @@ def do(info):
     >>> r.delete()
     """
     ret = dict()
-    obj = role.objects.filter(userid=info['userid'])
-    if obj.count() == 0 :
+    obj = utils.get_role(info['userid'])
+    if obj == None :
         ret['rc'] = RetCode.PLAYER_NOTEXIST
         return ret
-    else:
-        obj = obj[0]
-       
-       
+          
     obj.date_lastenter = timezone.now()
     obj.save()
     
-
+    obj.new_randstate()
+    
     ret['rc'] = RetCode.OK
     ret['player'] = obj.packforself()
     return ret

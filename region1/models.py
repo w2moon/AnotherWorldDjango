@@ -1,14 +1,16 @@
 from django.db import models
-
+from django.utils import timezone
 
 import time
-
 import re
+
+import wl
+
 isdate = re.compile(r'^date')
 
 class role(models.Model):
     userid = models.CharField(max_length=32,primary_key=True)
-    name = models.CharField(max_length=32,unique=True)
+    name = models.CharField(max_length=32)
     id = models.IntegerField(max_length=4,unique=True)
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
@@ -17,8 +19,6 @@ class role(models.Model):
     gold = models.IntegerField(max_length=4,default = 0)
     
     charged = models.IntegerField(max_length=4,default = 0)
-    
-    lastseed = models.IntegerField(max_length=4,default = 0)
     
     slot1 = models.IntegerField(max_length=4,default = 0)
     slot2 = models.IntegerField(max_length=4,default = 0)
@@ -33,6 +33,59 @@ class role(models.Model):
     date_lastupdate = models.DateTimeField()
     date_lastenter = models.DateTimeField()
     date_create = models.DateTimeField()
+    
+    
+    def get_object(self,sets,param):
+        objs = sets.filter(**param)
+        if objs.count() == 0:
+            return None
+        else:
+            return objs[0]
+    
+    def get_traveller(self,tid):
+        return self.get_object(self.traveller_set,{'id':id}) 
+    
+    def create_traveller(self):
+        return self.traveller_set.create()
+    
+    def get_soul(self,tid):
+        return self.get_object(self.soul_set,{'id':id}) 
+    
+    def create_soul(self,baseid):
+        soul = self.soul_set.create(baseid=baseid)
+        #is this save really need?
+        soul.save()
+        return soul
+    
+    def get_equipment(self,tid):
+        return self.get_object(self.equipment_set,{'id':id}) 
+    
+    def create_equipment(self,baseid):
+        equipment = self.equipment_set.create(baseid=baseid)
+        #is this save really need?
+        equipment.save()
+        return equipment
+    
+    def new_randstate(self):
+        randstate = self.get_randstate()
+        if randstate == None:
+            state = self.rand_state_set.create()
+        state.seed(self.userid+str(timezone.now()))
+       
+        state.save()
+        
+    def get_randstate(self):
+        objs = self.rand_state_set.all()
+        if objs.count() != 0:
+            return objs[0]
+        return None
+    
+    def rand(self):
+        self.get_randstate().rand()
+        
+    def save_rand(self):
+        self.get_randstate().save()
+        
     
     def packforself(self):
         player = {}
@@ -62,12 +115,44 @@ class role(models.Model):
         return "role userid:%s name:%s" % (self.userid,self.name)
     
     
-
+class rand_state(models.Model):
+    id = models.AutoField(primary_key=True)
+    owner = models.ForeignKey(role)
+    state = models.TextField(default="")
+    
+    rand_inst = None
+    
+    def get_inst(self):
+        if self.rand_inst == None:
+            self.rand_inst = wl.rand.rand()
+            self.rand_inst.unpack_str(self.state)
+        return self.rand_inst
+    
+    def save(self, *args, **kwargs):
+        self.state = self.get_inst().pack_str()
+        super(rand_state, self).save(*args, **kwargs) 
+        
+    """
+    need save first
+    """
+    def reset(self):
+        self.get_inst().unpack_str(self.state)
+    
+    def seed(self,s):
+        return self.get_inst().seed(s)
+    
+    def rand(self):
+        return self.get_inst().random()
+    
+    def __unicode__(self):
+        return "rand state"
     
 class equipment(models.Model):
     id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(role)
     baseid = models.IntegerField(max_length=4,default=0)
+    
+    travellerid = models.IntegerField(max_length=4,default=0)
     
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
@@ -87,6 +172,8 @@ class soul(models.Model):
     id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(role)
     baseid = models.IntegerField(max_length=4,default=0)
+    
+    travellerid = models.IntegerField(max_length=4,default=0)
     
     star = models.IntegerField(max_length=4,default=1)
     
@@ -121,10 +208,7 @@ class traveller(models.Model):
     Attack = models.IntegerField(max_length=4,default=0)
     Defense = models.IntegerField(max_length=4,default=0)
     Heal = models.IntegerField(max_length=4,default=0)
-    
-    
-    view = models.IntegerField(max_length=1,default=2) #VIEW_SELF
-    
+        
     skill1id = models.IntegerField(max_length=4,default=0)
     skill1exp = models.IntegerField(max_length=4,default=0)
     skill1level = models.IntegerField(max_length=4,default=0)
@@ -134,8 +218,7 @@ class traveller(models.Model):
     skill2level = models.IntegerField(max_length=4,default=0)
     
     nature = models.IntegerField(max_length=4,default=0)
-    
-    
+       
     soulid = models.IntegerField(max_length=4,default=0)
     
     weaponid = models.IntegerField(max_length=4,default=0)
@@ -143,10 +226,6 @@ class traveller(models.Model):
     trinketid = models.IntegerField(max_length=4,default=0)
     
     img = models.TextField(default="")
-    
-    VIEW_SELF = 0
-    VIEW_FRIEND = 1
-    VIEW_ALL = 2
     
     MALE = 0
     FEMAIL = 1
@@ -160,9 +239,7 @@ class traveller(models.Model):
         for k in self._meta.fields:
             if k.name != 'owner': 
                 t[k.name] = getattr(self,k.name)
-                
-      
-            
+                        
         return t
     
     def __unicode__(self):
