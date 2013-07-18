@@ -19,6 +19,7 @@ class role(models.Model):
     gold = models.IntegerField(max_length=4,default = 0)
     
     charged = models.IntegerField(max_length=4,default = 0)
+    checkin_num = models.IntegerField(max_length=4,default = 0)
     
     slot1 = models.IntegerField(max_length=4,default = 0)
     slot2 = models.IntegerField(max_length=4,default = 0)

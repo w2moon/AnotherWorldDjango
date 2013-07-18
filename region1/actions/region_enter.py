@@ -8,6 +8,8 @@ from django.utils import timezone
 
 from data.retcode import RetCode
 
+import wl
+
 arr = __file__.split('/')
 appname = arr[len(arr)-3]
 utils = None
@@ -15,7 +17,6 @@ exec("from "+appname+" import utils")
 
 
  
-
 #from region1.models import role
 
 def do(info):
@@ -33,16 +34,26 @@ def do(info):
     >>> r.delete()
     """
     ret = dict()
-    obj = utils.get_role(info['userid'])
-    if obj == None :
+    role = utils.get_role(info['userid'])
+    if role == None :
         ret['rc'] = RetCode.PLAYER_NOTEXIST
         return ret
-          
-    obj.date_lastenter = timezone.now()
-    obj.save()
     
-    obj.new_randstate()
+    timecur = timezone.now()
+    distance_day = wl.timezone_day_distance(timecur,role.date_lastenter)
+    if distance_day >= 1:
+        role.new_randstate()
+        
+    if distance_day == 1:
+        role.checkin_num = role.checkin_num + 1
+    
+    if timecur.year != role.date_lastenter.year and timecur.month != role.date_lastenter.month:
+        role.checkin_num = 0
+    
+    role.date_lastenter = timecur
+    role.save()
+    
     
     ret['rc'] = RetCode.OK
-    ret['player'] = obj.packforself()
+    ret['player'] = role.packforself()
     return ret

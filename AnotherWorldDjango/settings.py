@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django_nose',
     
     'account',
+    'gamelog',
     'region1',
 )
 

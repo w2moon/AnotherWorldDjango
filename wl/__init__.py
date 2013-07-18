@@ -6,11 +6,21 @@ wl test
 123
 >>> tonumber("12.3")
 12.3
+>>> timezone_day_distance(timezone.datetime(2013,7,17,0,0) , timezone.datetime(2013,7,18,0,0))
+-1
+>>> timezone_day_distance(timezone.datetime(2013,7,17,0,0) , timezone.datetime(2013,7,17,0,0))
+0
+>>> timezone_day_distance(timezone.datetime(2013,7,17,0,0) , timezone.datetime(2013,7,16,0,0))
+1
 """
 
 import csv
 import string
 import random
+import time
+import math
+
+from django.utils import timezone
 
 def tonumber(v):
     if type(v) != str or v == "":
@@ -61,3 +71,6 @@ def get_rand(dicobj):
         if r < v:
             return dicobj[k]
     return None
+
+def timezone_day_distance(t1,t2):
+    return int((time.mktime((t1.year,t1.month,t1.day,0,0,0,0,0,0)) - time.mktime((t2.year,t2.month,t2.day,0,0,0,0,0,0)))/86400)
