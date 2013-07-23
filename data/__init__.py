@@ -17,6 +17,11 @@ import wl
 
 rolecfg = wl.csv_cfg("../AnotherWorldData/rolecfg.csv")
 
+
+lotterypool = wl.csv_idmap("../AnotherWorldData/lotterypool.csv")
+submaps = wl.csv_idmap("../AnotherWorldData/submaps.csv")
+enemy = wl.csv_idmap("../AnotherWorldData/enemy.csv")
+stage = wl.csv_idmap("../AnotherWorldData/stage.csv")
 travellerbase = wl.csv_idmap("../AnotherWorldData/travellerbase.csv")
 soulbase = wl.csv_idmap("../AnotherWorldData/soulbase.csv")
 equipmentbase = wl.csv_idmap("../AnotherWorldData/equipmentbase.csv")

@@ -35,6 +35,11 @@ class role(models.Model):
     date_lastenter = models.DateTimeField()
     date_create = models.DateTimeField()
     
+    SLOT_NUM = 5
+    
+    def getUserid(self):
+        return self.userid
+    
     
     def get_object(self,sets,param):
         objs = sets.filter(**param)
@@ -43,13 +48,24 @@ class role(models.Model):
         else:
             return objs[0]
     
-    def get_traveller(self,tid):
+    def getTraveller(self,tid):
         return self.get_object(self.traveller_set,{'id':id}) 
     
     def create_traveller(self):
         return self.traveller_set.create()
     
-    def get_soul(self,tid):
+    def getSlotTravellers(self):
+        slots = []
+        travellerid = 0
+        for i in xrange(1,self.SLOT_NUM):
+            travellerid = getattr(self,"slot"+str(i))
+            if travellerid != 0:
+                slots.append(self.getTraveller(travellerid))
+            else:
+                slots.append(None)
+        return slots
+    
+    def getSoul(self,tid):
         return self.get_object(self.soul_set,{'id':id}) 
     
     def create_soul(self,baseid):
@@ -58,7 +74,7 @@ class role(models.Model):
         soul.save()
         return soul
     
-    def get_equipment(self,tid):
+    def getEquipment(self,tid):
         return self.get_object(self.equipment_set,{'id':id}) 
     
     def create_equipment(self,baseid):
@@ -86,7 +102,45 @@ class role(models.Model):
         
     def save_rand(self):
         self.get_randstate().save()
+    
+    def packforother(self):
+        player = {}
+        player['name'] = self.name
+        player['id'] = self.id
         
+        player['equipments'] = []
+        player['souls'] = []
+        player['travellers'] = []
+        
+        for i in xrange(1,self.SLOT_NUM+1):
+            slotid = 'slot'+str(i)
+            player[slotid] = getattr(self,slotid)
+            if player[slotid] != 0:
+                traveller = self.getTraveller(player[slotid])
+                if traveller != None:
+                    player['travellers'].append(traveller)
+                
+                    
+                    if traveller.soulid != 0:
+                        soul = self.getSoul(traveller.soulid)
+                        player['souls'].append(soul)
+                        
+                    
+                    if traveller.weaponid != 0:
+                        weapon = self.getEquipment(traveller.weaponid)
+                        player['equipments'].append(weapon)
+                        
+                    
+                    if traveller.clothid != 0:
+                        cloth = self.getEquipment(traveller.clothid)
+                        player['equipments'].append(cloth)
+                        
+                    
+                    if traveller.trinketid != 0:
+                        trinket = self.getEquipment(traveller.trinketid)
+                        player['equipments'].append(trinket)
+        
+        return player
     
     def packforself(self):
         player = {}
