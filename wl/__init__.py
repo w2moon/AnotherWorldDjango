@@ -72,5 +72,33 @@ def get_rand(dicobj):
             return dicobj[k]
     return None
 
+def clamp(v,vmin,vmax):
+    if v <= vmin:
+        return vmin
+    if v >= vmax:
+        return vmax
+    return v
+
 def timezone_day_distance(t1,t2):
     return int((time.mktime((t1.year,t1.month,t1.day,0,0,0,0,0,0)) - time.mktime((t2.year,t2.month,t2.day,0,0,0,0,0,0)))/86400)
+
+def parse_param(param,tokens):
+    if type(param) != str or param == '':
+        return param
+    
+    if len(tokens) == 0:
+        return param
+    arr = param.split(tokens[0])
+    if param[-1] == tokens[0]:
+        arr.pop()
+    
+    for k in xrange(0,len(arr)):
+        arr[k] = parse_param(arr[k],tokens[1:])
+        
+    return arr
+
+def csv_param(c,m):
+    for k,v in c.items():
+        for i in m:
+            v[i[0]] = parse_param(v[i[0]],i[1])
+            
