@@ -52,8 +52,8 @@ class buff(gameobject):
         if s >= self.stack:
             return
         
-        for i in xrange(1,s-self.stack+1):
-            self.doLogic(self.buffbase['startlogic'])
+        #for i in xrange(1,s-self.stack+1):
+        #    self.doLogic(self.buffbase['startlogic'])
         self.stack = s
         
     def update(self):

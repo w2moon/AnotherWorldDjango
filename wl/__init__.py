@@ -101,4 +101,9 @@ def csv_param(c,m):
     for k,v in c.items():
         for i in m:
             v[i[0]] = parse_param(v[i[0]],i[1])
+           
+inner_id = 0 
+def local_id():
+    inner_id = inner_id + 1
+    return inner_id
             
