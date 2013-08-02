@@ -83,20 +83,26 @@ class traveller(gameobject):
     def getSkills(self):
         skills = []
         
+        if self.getSkill1Id() != 0:
+            skills.append([self.getSkill1Id(),self.getSkill1Level()])
+            
+        if self.getSkill2Id() != 0:
+            skills.append([self.getSkill2Id(),self.getSkill2Level()])
+        
         temp = self.getWeapon()
         if temp != None and temp.hasSkill():
-            skills.push([temp.getSkillId(),temp.getSkillLevel()])
+            skills.append([temp.getSkillId(),temp.getSkillLevel()])
             
         temp = self.getCloth()
         if temp != None and temp.hasSkill():
-            skills.push([temp.getSkillId(),temp.getSkillLevel()])
+            skills.append([temp.getSkillId(),temp.getSkillLevel()])
             
         temp = self.getTrinket()
         if temp != None and temp.hasSkill():
-            skills.push([temp.getSkillId(),temp.getSkillLevel()])
+            skills.append([temp.getSkillId(),temp.getSkillLevel()])
             
         temp = self.getSoul()
         if temp != None and temp.hasSkill():
-            skills.push([temp.getSkillId(),temp.getSkillLevel()])
+            skills.append([temp.getSkillId(),temp.getSkillLevel()])
         
         return skills

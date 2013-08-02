@@ -3,7 +3,6 @@ Created on 2013-7-26
 
 @author: pengw
 '''
-
 class functask(object):
     '''
     classdocs
@@ -29,8 +28,11 @@ class functask(object):
         self.tasks.remove(func)
         
     def next(self):
-        task = self.tasks[0]
-        del self.tasks[0]
+        if len(self.tasks) > 0: 
+            task = self.tasks[0]
+            del self.tasks[0]
+        else:
+            task = None
         dt = None
         while task != None and dt == None:
             dt = task[0](*(task[1]))

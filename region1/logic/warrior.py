@@ -35,10 +35,10 @@ class warrior(gameobject):
         
         skills = traveller.getSkills()
         for s in skills:
-            self.skills.append(skill(s[0],s[1]))
+            self.skills.append(skill(self,battlefield,s[1],data.skillbase[s[0]]))
             
-    def notify(self,e):
-        pass
+    def notify(self,*args):
+        self.battlefield.on_warrior_event(self,*args)
             
     def battle_init(self):
         maxhp = self.traveller.getProperty('MaxHP')
@@ -184,7 +184,7 @@ class warrior(gameobject):
         return self.battlefield.rand()
     
     def incHP(self,v):
-        isCrit = self.rand() < self.getProperty('Critical')
+        isCrit = self.rand() < self.getProperty('Crit')
         if isCrit:
             v *= 2
             
@@ -193,16 +193,16 @@ class warrior(gameobject):
         self.notify('incHP',v,isCrit)
         
     def decHP(self,v):
+        
         if self.rand() < self.getProperty('Dodge'):
             self.notify('dodge')
             return
         
-        isCrit = self.rand() < self.getProperty('Critical')
+        isCrit = self.rand() < self.getProperty('Crit')
         if isCrit:
             v *= 2
             
         self.setHP(wl.clamp(self.getHP()-v,0,self.getMaxHP()))
-        
         self.notify('decHP',v,isCrit)
         
         if self.isDead():
@@ -239,7 +239,7 @@ class warrior(gameobject):
         self.notify('decMaxEnergy',v)
         
     def beDefender(self,attacker):
-        self.notify('bedefender',[attacker])
+        self.notify('beDefender',[attacker])
         
     def setGuarder(self,warrior):
         self.guarder = warrior
@@ -330,8 +330,8 @@ class warrior(gameobject):
            
     def action(self):
         for s in self.skills:
-            if s.isActiveSkill() and s.canBeCast():
-                return s.cast()
+            if s.isActiveSkill() and s.canBeCast(None,None):
+                return s.cast(None,None)
             
     def newturn(self):
         pass
@@ -352,9 +352,9 @@ class warrior(gameobject):
         realtarget = target
         if target.getGuarder() != None :
             realtarget = target.getGuarder()
-            self.battlefield.addTask(realtarget,realtarget.moveBack)
+            self.battlefield.addTask(realtarget.moveBack)
             target.setGuarder(None)
-            
+        
         damage = self.calc_damage(self, realtarget, protype, prorate)
         realtarget.decHP(damage)
         
@@ -374,8 +374,8 @@ class warrior(gameobject):
         if nottriggerevent != True:
             self.notify('heal',[realtarget],value)
             
-    def moveTo(self):
-        self.notify('moveTo')
+    def moveTo(self,w):
+        self.notify('moveTo',w)
         
     def moveBack(self):
         self.notify('moveBack')
@@ -383,9 +383,9 @@ class warrior(gameobject):
     def on_event(self,*args):
         tasks = []
         
-        for s in self.skills:
-            if not s.isActiveSkill():
-                tasks.append([s,s.on_event,args])
+        for s in self.skills:  
+            if not s.isActiveSkill() and s.isListen(args[1]):
+                tasks.append([s.on_event,args])
         
         
         self.battlefield.addTasks(tasks)

@@ -29,7 +29,7 @@ right = 4
 
 
 
-
+import random as sysrand
     
 
 class battlefield(object):
@@ -38,7 +38,7 @@ class battlefield(object):
     '''
     
     def rand(self):
-        return 0
+        return sysrand.random()
     
     
     def select_left(self,objs,nature_type,num,out_array,selecthero,needalive):
@@ -48,12 +48,14 @@ class battlefield(object):
             if num == 0:
                 break
             o = objs[k]
+            if o == None:
+                continue
             if (needalive and not o.isDead()) or (not needalive and o.isDead()):
                 out_array.append(o)
                 num -= 1
                 
         if selecthero and (len(out_array) == 0 or num < 0):
-            out_array.push(objs[0])
+            out_array.append(objs[0])
                 
     def select_right(self,objs,nature_type,num,out_array,selecthero,needalive):
         for k in xrange(len(objs)-1,-1,-1):
@@ -62,17 +64,21 @@ class battlefield(object):
             if num == 0:
                 break
             o = objs[k]
+            if o == None:
+                continue
             if (needalive and not o.isDead()) or (not needalive and o.isDead()):
                 out_array.append(o)
                 num -= 1
                 
         if selecthero and (len(out_array) == 0 or num < 0):
-            out_array.push(objs[0])
+            out_array.append(objs[0])
     
     def select_random(self,objs,nature_type,num,out_array,selecthero,needalive):
         arr = []    
         for k in xrange(0,len(objs)):    
             o = objs[k]
+            if o == None:
+                continue
             if (needalive and not o.isDead()) or (not needalive and o.isDead()):
                 if k != 0 or selecthero:
                     arr.append(o)
@@ -86,10 +92,14 @@ class battlefield(object):
     def select_lowesthp(self,objs,nature_type,num,out_array,selecthero,needalive):
         if num == -1:
             for o in objs:
+                if o == None:
+                    continue
                 if not o.isDead():
                     out_array.append(o)
         else:
             for o in objs:
+                if o == None:
+                    continue
                 if o.isDead():
                     continue
                 if len(out_array) < num:
@@ -104,6 +114,8 @@ class battlefield(object):
                     else:
                         out_array[0] = o
         
+    def getWarriors(self):
+        return self.warriors
 
     def nature_select(self,objs,nature_type,num,out_array,selecthero,needalive):
         select_funcs = {
@@ -126,32 +138,130 @@ class battlefield(object):
                 if p != player:
                     enemywarriors = p.getWarriors()
                     break
-            for w in warriors:
-                if w == actor:
-                    if (needalive and not ) or ():
-                        target = ew
+            for k in xrange(1,len(warriors)):
+                if warriors[k] == actor:
+                    if enemywarriors[k] != None and ( (needalive and not enemywarriors[k].isDead()) or (not needalive and enemywarriors[k].isDead()) ):
+                        target = enemywarriors[k]
                 break
+            if target == None:
+                for k in xrange(1,len(enemywarriors)):
+                    if enemywarriors[k] != None and ( (needalive and not enemywarriors[k].isDead()) or (not needalive and enemywarriors[k].isDead()) ):
+                        target = enemywarriors[k]
+                        break
+            if target == None:
+                target = enemywarriors[0]
+            targets.append(target)
         else:
             for p in self.players:
                 if p != player:
                     self.nature_select(p.getWarriors(), nature_type, target_num, targets, True, needalive)
+                    if target_num != -1 and len(targets) >= target_num:
+                        break 
         
         return targets
+    
+    def target_ally(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        for p in self.players:
+            if p == player:
+                self.nature_select(p.getWarriors(), nature_type, target_num, targets, True, needalive)
+                if target_num != -1 and len(targets) >= target_num:
+                    break
+        return targets
+    
+    def target_all(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        for w in self.warriors:
+            if w != None and ( (needalive and not w.isDead()) or (not needalive and w.isDead()) ):
+                targets.append(w)
+        return targets
+    
+    def target_self(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        if (needalive and not actor.isDead()) or (not needalive and actor.isDead()):
+            targets.append(actor)
+            
+        return targets
+    
+    def target_onlyallyfront(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        for p in self.players:
+            if p == player:
+                self.nature_select(p.getWarriors(), nature_type, target_num, targets, False, needalive)
+                if target_num != -1 and len(targets) >= target_num:
+                    break
+                
+        return targets
+    
+    def target_onlyallyhero(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        for p in self.players:
+            if p == player:
+                hero = p.getWarriors()[0]
+                if (needalive and not hero.isDead()) or (not needalive and hero.isDead()):
+                    targets.append(hero)
+                    
+                
+        return targets
+    
+    def target_onlyenemyfront(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        for p in self.players:
+            if p != player:
+                self.nature_select(p.getWarriors(), nature_type, target_num, targets, False, needalive)
+                if target_num != -1 and len(targets) >= target_num:
+                    break
+                
+        return targets
+    
+    def target_onlyenemyhero(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        for p in self.players:
+            if p != player:
+                hero = p.getWarriors()[0]
+                if (needalive and not hero.isDead()) or (not needalive and hero.isDead()):
+                    targets.append(hero)
+                    
+                
+        return targets
+    
+    def target_eventtrigger(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        if (needalive and not trigger.isDead()) or (not needalive and trigger.isDead()):
+            targets.append(trigger)
+        
+        return targets
+    
+    def target_eventtargets(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
+        targets = []
+        
+        for w in event_targets:
+            if (needalive and not w.isDead()) or (not needalive and w.isDead()):
+                targets.append(w)
+        
+        return targets
+      
     
     def select_target(self,player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets):
         target_funcs = {
                         'enemy':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'ally':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'all':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'self':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'onlyallyfront':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'onlyallyhero':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'onlyenemyfront':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'onlyenemyhero':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'eventtrigger':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
-                        'eventtarget':lambda:self.target_enemy(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'ally':lambda:self.target_ally(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'all':lambda:self.target_all(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'self':lambda:self.target_self(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'onlyallyfront':lambda:self.target_onlyallyfront(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'onlyallyhero':lambda:self.target_onlyallyhero(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'onlyenemyfront':lambda:self.target_onlyenemyfront(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'onlyenemyhero':lambda:self.target_onlyenemyhero(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'eventtrigger':lambda:self.target_eventtrigger(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
+                        'eventtarget':lambda:self.target_eventtarget(player,actor,target_type,target_num,nature_type,needalive,trigger,event_targets),
                         }
-        
         return target_funcs[target_type]()
 
     def __init__(self,info,owner):
@@ -160,10 +270,8 @@ class battlefield(object):
         '''
         self.info = info
         self.owner = owner
-        
-        self.functask = wl.functask()
-        
-        roles = [role(owner),role.create_from_enemy(info.enemy)]
+        self.functask = wl.functask.functask()
+        roles = [role(owner),role.create_from_enemy(info['enemy'])]
         self.initBattle(roles)
         self.start()
         
@@ -180,6 +288,7 @@ class battlefield(object):
     def initBattle(self,roles):
         self.players = []
         self.warriors = []
+        
         for r in roles:
             p = player(r,self)
             self.players.append(p)
@@ -187,14 +296,17 @@ class battlefield(object):
             
     def init_role(self,p):
         for w in p.getWarriors():
-            w.battle_init()
+            if w != None:
+                w.battle_init()
+                self.warriors.append(w)
             
     def on_warrior_event(self,*args):
         for w in self.warriors:
-            w.on_event(*args)
+            if w != None:
+                w.on_event(*args)
             
-    def delayupdate(self,t):
-        pass
+    def delayupdate(self,dt):
+        self.turn_process()
     
     def start(self):
         self.turn = 1
@@ -203,8 +315,14 @@ class battlefield(object):
     def turn_process(self):
         dt = self.functask.next()
         if dt != None:
+            #self.delayupdate(dt)
             return
         self.state(self)
+        #self.delayupdate(self.state(self))
+        
+    def isFinished(self):
+        return self.state == state.state_finish
+        
         
             
         

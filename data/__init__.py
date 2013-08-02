@@ -21,6 +21,8 @@ rolecfg = wl.csv_cfg("../AnotherWorldData/rolecfg.csv")
 lotterypool = wl.csv_idmap("../AnotherWorldData/lotterypool.csv")
 wl.csv_param(lotterypool,[ ["pool",[";",","]] ])
 
+rolelevel = wl.csv_idmap("../AnotherWorldData/rolelevel.csv")
+
 submaps = wl.csv_idmap("../AnotherWorldData/submaps.csv")
 wl.csv_param(submaps,[ ["reward",[";",","]],["stages",[","]] ])
 
@@ -60,3 +62,6 @@ targettype = {
               'eventtarget':'eventtarget',
               'selected':'selected',
               }
+
+MAX_BATTLE_TURN = 30
+ACTION_INTERVAL = 0

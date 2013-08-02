@@ -4,19 +4,28 @@ utils
 >>> log_login("1")
 >>> log_charge("1",1)
 >>> log_shop("1",1,1)
+>>> info = data.stage[1001]
+>>> r = logic.role.role.create_from_enemy(info['enemy'])
 """
 from django.utils import timezone
 
 from account.models import base
 
+from data.retcode import RetCode
+
 import gamelog.models as log
 
+import logic
+import data
+import wl
 
 arr = __file__.split('/')
 appname = arr[len(arr)-2]
 
 exec("import "+appname)
 role = eval("reload("+appname+".models)").role
+
+
 
 def get_object(model,param):
     objs = model.objects.filter(**param)
@@ -50,3 +59,30 @@ def log_charge(userid,value):
 def log_shop(userid,itemtype,value):
     l = log.shop(userid=userid,date=timezone.now(),type=itemtype,value=value,ver=0)
     l.save()
+
+def battle_pve(info):
+    r = get_role(info['userid'])
+    
+    if r.getHero() == None:
+        return RetCode.BATTLE_NOTHAVEHERO
+    
+    stageinfo = data.stage[info['stage_id']]
+    
+    if r.level < stageinfo['levelneed']:
+        return RetCode.BATTLE_LOW_LEVEL
+    
+    if r.hp < stageinfo['hpcost']:
+        return RetCode.BATTLE_LOW_HP
+    
+    bf = logic.battlefield.battlefield(stageinfo,r.packforother())
+    
+    while not bf.isFinished():
+        bf.turn_process()
+     
+   
+    if bf.result == True:
+        #reward
+        return RetCode.BATTLE_RESULT_WIN
+    else:
+        return RetCode.BATTLE_RESULT_FAIL
+    

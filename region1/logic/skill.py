@@ -5,7 +5,7 @@ Created on 2013-7-24
 '''
 from gameobject import gameobject
 import skills
-
+import wl
 class skill(gameobject):
     
     def __init__(self,warrior,battlefield,level,skillbase):
@@ -18,22 +18,48 @@ class skill(gameobject):
     def battle_init(self):
         self.cooldown = 0
         
-    def on_event(self,warrior,event,event_targets,*fargs):
-        if self.skillbase.event_id != event:
-            return
+    def getBattleField(self):
+        return self.battlefield
+    
+    def getWarrior(self):
+        return self.warrior
         
-        if (self.skillbase.event_trigger == 'ally_except_me' or self.skillbase.event_trigger == 'all_except_me') and self.warrior == warrior:
+    def isListen(self,event):
+        return self.skillbase['event_id'] == event
+        
+    def on_event(self,warrior,event,event_targets,*fargs):
+        
+        if self.skillbase['event_id'] != event:
             return
-        elif self.skillbase.event_trigger == 'self' and self.warrior != warrior:
+        #if event == "beDefender":
+            #wl.debug_on()
+            #wl.debug(self.warrior,warrior)
+        if (self.skillbase['event_trigger'] == 'ally_except_me' or self.skillbase['event_trigger'] == 'all_except_me') and self.warrior == warrior:
+            #if event == "beDefender":
+                #wl.debug("s1")
+                #wl.debug_off()
             return
-        elif (self.skillbase.event_trigger == 'enemy' and not self.warrior.isEnemy(warrior)) or (self.skillbase.event_trigger != 'enemy' and self.warrior.isEnemy(warrior)):
+        elif self.skillbase['event_trigger'] == 'self' and self.warrior != warrior:
+            #if event == "beDefender":
+                #wl.debug("s2")
+                #wl.debug_off()
+            return
+        elif (self.skillbase['event_trigger'] == 'enemy' and not self.warrior.isEnemy(warrior)) or (self.skillbase['event_trigger'] != 'enemy' and self.warrior.isEnemy(warrior)):
+            #if event == "beDefender":
+                #wl.debug("s3")
+                #wl.debug_off()
             return
         
         if not self.canBeCast(warrior,event_targets):
+            #if event == "beDefender":
+                #wl.debug("s4")
+                #wl.debug_off()
             return
         
         args = (warrior,event_targets)+fargs
         
+        #if event == "beDefender":
+            #wl.debug_off()
         return self.cast(*args)
     
     def getBase(self):
@@ -52,7 +78,7 @@ class skill(gameobject):
         self.cooldown = v
         
     def startCoolDown(self):
-        self.cooldown = self.skillbase.cooldown
+        self.cooldown = self.skillbase['cooldown']
         
     def update(self):
         self.cooldown -= 1
@@ -76,13 +102,11 @@ class skill(gameobject):
             for v in self.getBase()['condition']:
                 if v[0] != "" and not self.isTargetValid(v[0],v[2],v[1] == 'alive',trigger,event_targets):
                     return False
-            
         return True
     
     def isTargetValid(self,typ,num,needalive,trigger,event_targets):
         if typ == "none":
             return True
-        
         targets = self.battlefield.select_target(self.warrior.getPlayer(),self.warrior,typ,num,self.warrior.getTraveller().getNature(),needalive,trigger,event_targets)
         
         return len(targets) > 0
@@ -93,14 +117,16 @@ class skill(gameobject):
             
         self.startCoolDown()
         
-        skills[self.getBase()['action']](self,trigger,event_targets,*args)
-            
-        return self.getBase()['duration']
+        getattr(skills,self.getBase()['action']).do(self,trigger,event_targets,*args)
+        return 0 #self.getBase()['duration']
     
     def target_take_effect(self,typ,num,needalive,action,particle,effecttype,effectvalue,trigger,event_targets):
         if typ == "none":
             return
         
     def isActiveSkill(self):
-        return self.skillbase.event_id == "action"
+        return self.skillbase['event_id'] == "action"
+    
+    def delay(self,dt):
+        return dt
     

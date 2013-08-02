@@ -18,7 +18,9 @@ class player(gameobject):
         travellers = role.getSlotTravellers()
         for v in travellers:
             if v != None:
-                self.warriors.index(warrior(v))
+                self.warriors.append(warrior(self,self.battlefield,v))
+            else:
+                self.warriors.append(None)
         
         self.hero = self.warriors[0]
         
@@ -27,6 +29,10 @@ class player(gameobject):
     
     def getWarriors(self):
         return self.warriors
+    
+    def getHero(self):
+        return self.hero
+    
         
   
         

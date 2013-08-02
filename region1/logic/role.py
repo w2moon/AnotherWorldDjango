@@ -8,6 +8,10 @@ from gameobject import gameobject
 import wl
 import data
 
+from traveller import traveller
+from soul import soul
+from equipment import equipment
+
 class role(gameobject):
     '''
     classdocs
@@ -22,60 +26,65 @@ class role(gameobject):
                'equipments':[],
                }
         
+        idx = 0
         for e in enemies:
+            idx += 1
+            if e[0] == 0:
+                tmp['slot'+str(idx)] = 0
+                continue
             einfo = data.enemy[e[0]]
             traveller = {
                             'id':wl.local_id(),
                             'level':e[1],
-                            'skill1id':einfo.skill1id,
-                            'skill1level':einfo.skill1level,
-                            'skill2id':einfo.skill2id,
-                            'skill2level':einfo.skill2level,
+                            'skill1id':einfo['skill1id'],
+                            'skill1level':einfo['skill1level'],
+                            'skill2id':einfo['skill2id'],
+                            'skill2level':einfo['skill2level'],
                             'nature':4,
                          }
-            
-            if einfo.soulid != 0:
+            tmp['slot'+str(idx)] = traveller['id']
+            if einfo['soulid'] != 0:
                 soul = {
                             'id':wl.local_id(),
-                            'baseid':einfo.soulid,
-                            'level':einfo.soullevel,
-                            'skilllevel':einfo.skilllevel,
+                            'baseid':einfo['soulid'],
+                            'level':einfo['soullevel'],
+                            'skilllevel':einfo['soulskilllevel'],
                         }
                 tmp['souls'].append(soul)
                 traveller['soulid'] = soul['id']
             else:
                 traveller['soulid'] = 0
                 
-            if einfo.weaponid != 0:
+            if einfo['weaponid'] != 0:
                 weapon = {
                             'id':wl.local_id(),
-                            'baseid':einfo.weaponid,
-                            'level':einfo.weaponlevel,
-                            'skilllevel':einfo.weaponskilllevel,
+                            'baseid':einfo['weaponid'],
+                            'level':einfo['weaponlevel'],
+                            'skilllevel':einfo['weaponskilllevel'],
                         }
                 tmp['equipments'].append(weapon)
                 traveller['weaponid'] = weapon['id']
             else:
                 traveller['weaponid'] = 0
                 
-            if einfo.clothid != 0:
+            if einfo['clothid'] != 0:
                 cloth = {
                             'id':wl.local_id(),
-                            'baseid':einfo.clothid,
-                            'level':einfo.clothlevel,
-                            'skilllevel':einfo.clothskilllevel,
+                            'baseid':einfo['clothid'],
+                            'level':einfo['clothlevel'],
+                            'skilllevel':einfo['clothskilllevel'],
                         }
                 tmp['equipments'].append(cloth)
                 traveller['clothid'] = soul['id']
             else:
                 traveller['soulid'] = 0
                 
-            if einfo.trinketid != 0:
+            if einfo['trinketid'] != 0:
                 trinket = {
                             'id':wl.local_id(),
-                            'baseid':einfo.trinketid,
-                            'level':einfo.trinketlevel,
-                            'skilllevel':einfo.trinketskilllevel,
+                            'baseid':einfo['trinketid'],
+                            'level':einfo['trinketlevel'],
+                            'skilllevel':einfo['trinketskilllevel'],
                         }
                 tmp['equipments'].append(trinket)
                 traveller['trinketid'] = soul['id']
@@ -83,6 +92,9 @@ class role(gameobject):
                 traveller['trinketid'] = 0
                 
             tmp['travellers'].append(traveller)
+            
+        for i in xrange(idx+1,6):
+            tmp['slot'+str(i)] = 0
             
         return role(tmp)
                 
@@ -95,6 +107,19 @@ class role(gameobject):
         Constructor
         '''
         self.info = info
+        
+        self.travellers = []
+        self.souls = []
+        self.equipments = []
+        
+        for t in self.info['travellers']:
+            self.travellers.append(traveller(t,self))
+            
+        for t in self.info['souls']:
+            self.souls.append(soul(t))
+            
+        for t in self.info['equipments']:
+            self.equipments.append(equipment(t))
         
     def getUserid(self):
         return self.info['userid']
@@ -132,6 +157,7 @@ class role(gameobject):
             
         return None
     
+    
     def getSlotTravellers(self):
         slots = []
         for i in xrange(1,6):
@@ -148,6 +174,15 @@ class role(gameobject):
         if sid == 0:
             return None
         for s in self.souls:
+            if s.getId() == sid:
+                return s
+        
+        return None
+    
+    def getEquipment(self,sid):
+        if sid == 0:
+            return None
+        for s in self.equipments:
             if s.getId() == sid:
                 return s
         

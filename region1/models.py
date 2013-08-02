@@ -3,7 +3,7 @@ from django.utils import timezone
 
 import time
 import re
-
+import data
 import wl
 
 isdate = re.compile(r'^date')
@@ -40,6 +40,118 @@ class role(models.Model):
     def getUserid(self):
         return self.userid
     
+    def addReward(self,reward):
+        
+        equipments =[]
+        souls = []
+        addexp = 0
+        addhp = 0
+        addcopper = 0
+        addgold = 0
+        addlevel = 0
+        addextrasoulnum = 0
+        addextraequipmentnum = 0
+        addextratravellernum = 0
+        for r in reward:
+            if self.rand() < r[0]:
+                o = getattr(self,r[1])(*(r[2:]))
+                if o != None:
+                    if r[1] == "addEquip":
+                        equipments.append(o.pack())
+                    elif r[1] == "addSoul":
+                        souls.append(o.pack())
+                    elif r[1] == "lotteryPool":
+                        equipments = equipments + o['equipments']
+                        souls = souls + o['souls']
+                        addexp += o['addexp']
+                        addhp += o['addhp']
+                        addcopper += o['addcopper']
+                        addgold += o['addgold']
+                        addgold += o['addgold']
+                        addextrasoulnum += o['addextrasoulnum']
+                        addextraequipmentnum += o['addextraequipmentnum']
+                        addextratravellernum += o['addextratravellernum']
+                    elif r[1] == "addExp":
+                        addexp += r[2]
+                    elif r[1] == "addHP":
+                        addhp += r[2]
+                    elif r[1] == "addCopper":
+                        addcopper += r[2]
+                    elif r[1] == "addGold":
+                        addgold += r[2]
+                    elif r[1] == "addLevel":
+                        addlevel += r[2]
+                    elif r[1] == "addExtraSoulNum":
+                        addextrasoulnum += r[2]
+                    elif r[1] == "addExtraEquipmentNum":
+                        addextraequipmentnum += r[2]
+                    elif r[1] == "addExtraTravellerNum":
+                        addextratravellernum += r[2]
+                        
+                        
+                        
+        return {
+               'hp':self.hp,
+               'copper' : self.copper,
+               'gold' : self.gold,
+               'exp' : self.exp,
+               'level' : self.level,
+               'extrasoulnum' : self.extrasoulnum,
+               'extraequipmentnum' : self.extraequipmentnum,
+               'extratravellernum' : self.extratravellernum,
+               
+               'addexp' : addexp,
+               'addhp' : addhp,
+               'addcopper' :addcopper,
+               'addgold' :addgold,
+               'addlevel' :addlevel,
+               'addextrasoulnum' :addextrasoulnum,
+               'addextraequipmentnum' :addextraequipmentnum,
+               'addextratravellernum' :addextratravellernum,
+               
+               'equipments' : equipments,
+               'souls' : souls,
+               }
+        
+    def lotteryPool(self,pid):
+        return self.addReward(data.lotterypool[pid]['pool'])
+        
+    def addExtraSoulNum(self,v):
+        self.extrasoulnum += v
+        
+    def addExtraEquipmentNum(self,v):
+        self.extraequipmentnum += v
+        
+    def addExtraTravellerNum(self,v):
+        self.extratravellernum += v
+        
+    def addCopper(self,v):
+        self.copper += v
+        
+    def addGold(self,v):
+        self.gold += v
+        
+    def addHP(self,v):
+        self.hp = wl.clamp(self.hp+v, 0, data.rolelevel[self.level]['maxhp'])
+        
+    def onLevelup(self):
+        self.hp = data.rolelevel[self.level]['maxhp']
+        
+    def addExp(self,v):
+        if data.rolelevel.has_key(self.level + 1):
+            self.exp += v
+            if self.exp >= data.rolelevel[self.level]['exp']:
+                self.level += 1
+                self.exp -= data.rolelevel[self.level]['exp']
+                
+                self.onLevelup()
+        else:
+            self.exp = 0
+        
+    def addLevel(self,v):
+        self.level = wl.clamp(self.level+v, 0, len(data.rolelevel))
+        
+        self.onLevelup()
     
     def get_object(self,sets,param):
         objs = sets.filter(**param)
@@ -47,12 +159,71 @@ class role(models.Model):
             return None
         else:
             return objs[0]
+        
+    def getHero(self):
+        if self.slot1 == 0:
+            return None
+        else:
+            return self.getTraveller(self.slot1)
+        
+    def equipTraveller(self,slot,travellerid):
+        setattr(self,slot,travellerid)
+        self.save()
+        
+    def addSoul(self,soulid):
+        soulbase = data.get_info(data.soulbase,soulid)
+        if soulbase != None:
+            soul = self.soul_set.create(baseid=soulid)
+            soul.save()
+            return soul
+        return None
     
+    def addEquip(self,equipid):
+        equipbase = data.get_info(data.soulbase,equipid)
+        if equipbase != None:
+            equip = self.equipment_set.create(baseid=equipid)
+            equip.save()
+            return equip
+        return None
+    
+    
+    def addTraveller(self,info,travellerbase):
+        traveller = self.traveller_set.create()
+        traveller.name = info['name']
+        traveller.gender = info['gender']
+        traveller.age = info['age']
+        traveller.img = info['img']
+        
+        
+        traveller.MaxHP = travellerbase['MaxHP']
+        traveller.Attack = travellerbase['Attack']
+        traveller.Defense = travellerbase['Defense']
+        traveller.Heal = travellerbase['Heal']
+        
+        soul = self.addSoul(travellerbase['soulbaseid'])
+        if soul != None:
+            traveller.equip_soul(soul)
+        
+        weapon = self.addEquip(travellerbase['weaponbaseid'])
+        if weapon != None:
+            traveller.equip_weapon(weapon)
+        
+        cloth = self.addEquip(travellerbase['clothbaseid'])
+        if cloth != None:
+            traveller.equip_cloth(cloth)
+        
+        trinket = self.addEquip(travellerbase['trinketbaseid'])
+        if trinket != None:
+            traveller.equip_trinket(trinket)
+        
+            
+        traveller.save()
+        
+        return traveller
+            
     def getTraveller(self,tid):
-        return self.get_object(self.traveller_set,{'id':id}) 
+        return self.get_object(self.traveller_set,{'id':tid}) 
     
-    def create_traveller(self):
-        return self.traveller_set.create()
     
     def getSlotTravellers(self):
         slots = []
@@ -66,16 +237,12 @@ class role(models.Model):
         return slots
     
     def getSoul(self,tid):
-        return self.get_object(self.soul_set,{'id':id}) 
+        return self.get_object(self.soul_set,{'id':tid}) 
     
-    def create_soul(self,baseid):
-        soul = self.soul_set.create(baseid=baseid)
-        #is this save really need?
-        soul.save()
-        return soul
+   
     
     def getEquipment(self,tid):
-        return self.get_object(self.equipment_set,{'id':id}) 
+        return self.get_object(self.equipment_set,{'id':tid}) 
     
     def create_equipment(self,baseid):
         equipment = self.equipment_set.create(baseid=baseid)
@@ -86,16 +253,20 @@ class role(models.Model):
     def new_randstate(self):
         randstate = self.get_randstate()
         if randstate == None:
-            state = self.rand_state_set.create()
-        state.seed(self.userid+str(timezone.now()))
+            randstate = self.rand_state_set.create()
+        randstate.seed(self.userid+str(timezone.now()))
        
-        state.save()
+        randstate.save()
         
     def get_randstate(self):
         objs = self.rand_state_set.all()
         if objs.count() != 0:
             return objs[0]
-        return None
+        
+        state = self.rand_state_set.create()
+        state.seed(self.userid+str(timezone.now()))
+        state.save()
+        return state
     
     def rand(self):
         self.get_randstate().rand()
@@ -118,27 +289,27 @@ class role(models.Model):
             if player[slotid] != 0:
                 traveller = self.getTraveller(player[slotid])
                 if traveller != None:
-                    player['travellers'].append(traveller)
+                    player['travellers'].append(traveller.pack())
                 
                     
                     if traveller.soulid != 0:
                         soul = self.getSoul(traveller.soulid)
-                        player['souls'].append(soul)
+                        player['souls'].append(soul.pack())
                         
                     
                     if traveller.weaponid != 0:
                         weapon = self.getEquipment(traveller.weaponid)
-                        player['equipments'].append(weapon)
+                        player['equipments'].append(weapon.pack())
                         
                     
                     if traveller.clothid != 0:
                         cloth = self.getEquipment(traveller.clothid)
-                        player['equipments'].append(cloth)
+                        player['equipments'].append(cloth.pack())
                         
                     
                     if traveller.trinketid != 0:
                         trinket = self.getEquipment(traveller.trinketid)
-                        player['equipments'].append(trinket)
+                        player['equipments'].append(trinket.pack())
         
         return player
     
@@ -300,6 +471,88 @@ class traveller(models.Model):
                         
         return t
     
+    def takeoff_soul(self):
+        if self.soulid != 0:
+            soul = self.owner.getSoul(self.soulid)
+            soul.travellerid = 0
+            self.soulid = 0
+            
+            soul.save()
+            self.save()
+    
+    def equip_soul(self,soul):
+        self.takeoff_soul()
+        
+        self.soulid = soul.id
+        soul.travellerid = self.id
+        
+        soul.save()
+        self.save()
+        
+    def takeoff_weapon(self):
+        if self.weaponid != 0:
+            weapon = self.owner.getEquipment(self.weaponid)
+            weapon.travellerid = 0
+            self.weaponid = 0
+            
+            weapon.save()
+            self.save()
+            
+    def takeoff_cloth(self):
+        if self.clothid != 0:
+            cloth = self.owner.getEquipment(self.clothid)
+            cloth.travellerid = 0
+            self.clothid = 0
+            
+            cloth.save()
+            self.save()
+            
+    def takeoff_trinket(self):
+        if self.trinketid != 0:
+            trinket = self.owner.getEquipment(self.trinketid)
+            trinket.travellerid = 0
+            self.trinketid = 0
+            
+            trinket.save()
+            self.save()
+        
+    def equip_weapon(self,weapon):
+        self.takeoff_weapon()
+        
+        self.weaponid = weapon.id
+        weapon.travellerid = self.id
+        
+        weapon.save()
+        self.save()
+        
+    def equip_cloth(self,cloth):
+        self.takeoff_cloth()
+        
+        self.clothid = cloth.id
+        cloth.travellerid = self.id
+        
+        cloth.save()
+        self.save()
+        
+    def equip_trinket(self,trinket):
+        self.takeoff_trinket()
+        
+        self.trinketid = trinket.id
+        trinket.travellerid = self.id
+        
+        trinket.save()
+        self.save()
+    
     def __unicode__(self):
         return "traveller %s" % (self.name)
+    
+class stage(models.Model):
+    id = models.AutoField(primary_key=True)
+    owner = models.ForeignKey(role)
+    
+    stage_id = models.IntegerField(max_length=4,default=0)
+    level = models.IntegerField(max_length=4,default=1)
+    
+    def __unicode__(self):
+        return "stage %d" % (self.stage_id)
     

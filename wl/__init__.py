@@ -87,7 +87,7 @@ def parse_param(param,tokens):
         return param
     
     if len(tokens) == 0:
-        return param
+        return tonumber(param)
     arr = param.split(tokens[0])
     if param[-1] == tokens[0]:
         arr.pop()
@@ -104,6 +104,33 @@ def csv_param(c,m):
            
 inner_id = 0 
 def local_id():
-    inner_id = inner_id + 1
+    global inner_id
+    inner_id += 1
     return inner_id
-            
+
+debug_enabled = False
+debug_info = []        
+def debug(*args):
+    global debug_enabled
+    global debug_info
+    if debug_enabled:
+        debug_info.append(args)
+        
+def debug_force(*args):
+    global debug_info
+    debug_info.append(args)
+    
+def debug_on():
+    global debug_enabled
+    debug_enabled = True
+    
+def debug_off():
+    global debug_enabled
+    debug_enabled = False
+    
+def get_debug():
+    global debug_info
+    s = ""
+    for i in debug_info:
+        s = s+str(i)
+    return s
