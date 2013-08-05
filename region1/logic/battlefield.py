@@ -8,6 +8,7 @@ from player import player
 
 import state
 import wl
+import data
 
 def sort_hp(t1,t2):
     h1 = t2.getHP()
@@ -43,7 +44,7 @@ class battlefield(object):
     
     def select_left(self,objs,nature_type,num,out_array,selecthero,needalive):
         for k in xrange(0,len(objs)):
-            if k == 0:
+            if k == data.HERO_IDX:
                 continue
             if num == 0:
                 break
@@ -54,12 +55,12 @@ class battlefield(object):
                 out_array.append(o)
                 num -= 1
                 
-        if selecthero and (len(out_array) == 0 or num < 0):
-            out_array.append(objs[0])
+        if selecthero and objs[data.HERO_IDX] != None and (len(out_array) == 0 or num < 0):
+            out_array.append(objs[data.HERO_IDX])
                 
     def select_right(self,objs,nature_type,num,out_array,selecthero,needalive):
         for k in xrange(len(objs)-1,-1,-1):
-            if k == 0:
+            if k == data.HERO_IDX :
                 continue
             if num == 0:
                 break
@@ -70,8 +71,8 @@ class battlefield(object):
                 out_array.append(o)
                 num -= 1
                 
-        if selecthero and (len(out_array) == 0 or num < 0):
-            out_array.append(objs[0])
+        if selecthero and objs[data.HERO_IDX] != None and (len(out_array) == 0 or num < 0):
+            out_array.append(objs[data.HERO_IDX])
     
     def select_random(self,objs,nature_type,num,out_array,selecthero,needalive):
         arr = []    
@@ -80,7 +81,7 @@ class battlefield(object):
             if o == None:
                 continue
             if (needalive and not o.isDead()) or (not needalive and o.isDead()):
-                if k != 0 or selecthero:
+                if k != data.HERO_IDX or selecthero:
                     arr.append(o)
             
         while len(arr) > 0 and num > 0:
@@ -95,7 +96,8 @@ class battlefield(object):
                 if o == None:
                     continue
                 if not o.isDead():
-                    out_array.append(o)
+                    if selecthero or o != objs[data.HERO_IDX]:
+                        out_array.append(o)
         else:
             for o in objs:
                 if o == None:
@@ -138,18 +140,17 @@ class battlefield(object):
                 if p != player:
                     enemywarriors = p.getWarriors()
                     break
-            for k in xrange(1,len(warriors)):
+            for k in xrange(0,len(warriors)-1):
                 if warriors[k] == actor:
                     if enemywarriors[k] != None and ( (needalive and not enemywarriors[k].isDead()) or (not needalive and enemywarriors[k].isDead()) ):
                         target = enemywarriors[k]
                 break
             if target == None:
-                for k in xrange(1,len(enemywarriors)):
+                for k in xrange(0,len(enemywarriors)):
                     if enemywarriors[k] != None and ( (needalive and not enemywarriors[k].isDead()) or (not needalive and enemywarriors[k].isDead()) ):
                         target = enemywarriors[k]
                         break
-            if target == None:
-                target = enemywarriors[0]
+            
             targets.append(target)
         else:
             for p in self.players:
@@ -201,8 +202,8 @@ class battlefield(object):
         
         for p in self.players:
             if p == player:
-                hero = p.getWarriors()[0]
-                if (needalive and not hero.isDead()) or (not needalive and hero.isDead()):
+                hero = p.getWarriors()[data.HERO_IDX]
+                if hero != None and ((needalive and not hero.isDead()) or (not needalive and hero.isDead())):
                     targets.append(hero)
                     
                 
@@ -224,8 +225,8 @@ class battlefield(object):
         
         for p in self.players:
             if p != player:
-                hero = p.getWarriors()[0]
-                if (needalive and not hero.isDead()) or (not needalive and hero.isDead()):
+                hero = p.getWarriors()[data.HERO_IDX]
+                if hero != None and ((needalive and not hero.isDead()) or (not needalive and hero.isDead())):
                     targets.append(hero)
                     
                 

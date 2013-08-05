@@ -25,7 +25,7 @@ def do(info):
     battle stage test
     >>> r = utils.create_role('2','2','tester')
     >>> r.save()
-    >>> info={'code':'battle_stage','userid':'2','stage_id':1001}
+    >>> info={'code':'battle_stage','userid':'2','stage_id':1001,'level':1}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.BATTLE_NOTHAVEHERO
     True
@@ -56,7 +56,9 @@ def do(info):
     if ret['rc'] == RetCode.BATTLE_RESULT_WIN:
         role = utils.get_role(info['userid'])
         ret['reward'] = role.addReward(data.stage[info['stage_id']]['reward'])
-        
+        if role.completeStage(info['stage_id'],info['level']) == 0:
+            rewardfirst = role.addReward(data.stage[info['stage_id']]['rewardfirst'])
+            ret['reward'] = wl.dict_merge(ret['reward'],rewardfirst)
         role.save()
     else:
         ret['reward'] = {}

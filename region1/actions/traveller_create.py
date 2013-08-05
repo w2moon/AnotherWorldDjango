@@ -26,7 +26,7 @@ def do(info):
     True
     >>> role = utils.get_role('1')
     >>> traveller = role.traveller_set.all()[0]
-    >>> traveller.weaponid != 0
+    >>> traveller.weaponrid != 0
     True
 	"""
 	ret = dict()

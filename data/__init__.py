@@ -15,6 +15,22 @@ basedata test
 
 import wl
 
+MAX_BATTLE_TURN = 30
+ACTION_INTERVAL = 0
+HERO_IDX = 4
+
+EQUIP_WEAPONR = 0
+EQUIP_WEAPONL = 1
+EQUIP_CLOTH = 2
+EQUIP_TRINKET = 3
+EQUIP_NUM = 4
+
+WEAPON_MAINHAND = 0
+WEAPON_OFFHAND = 1
+WEAPON_ONEHAND = 2
+WEAPON_TWOHAND = 3
+
+
 rolecfg = wl.csv_cfg("../AnotherWorldData/rolecfg.csv")
 
 
@@ -28,7 +44,7 @@ wl.csv_param(submaps,[ ["reward",[";",","]],["stages",[","]] ])
 
 enemy = wl.csv_idmap("../AnotherWorldData/enemy.csv")
 stage = wl.csv_idmap("../AnotherWorldData/stage.csv")
-wl.csv_param(stage,[ ["reward",[";",","]],["enemy",[";",","]] ])
+wl.csv_param(stage,[ ["rewardfirst",[";",","]],["reward",[";",","]],["enemy",[";",","]] ])
 
 travellerbase = wl.csv_idmap("../AnotherWorldData/travellerbase.csv")
 soulbase = wl.csv_idmap("../AnotherWorldData/soulbase.csv")
@@ -63,5 +79,4 @@ targettype = {
               'selected':'selected',
               }
 
-MAX_BATTLE_TURN = 30
-ACTION_INTERVAL = 0
+

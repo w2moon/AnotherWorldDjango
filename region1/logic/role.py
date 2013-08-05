@@ -41,6 +41,8 @@ class role(gameobject):
                             'skill2id':einfo['skill2id'],
                             'skill2level':einfo['skill2level'],
                             'nature':4,
+                            'soulid':0,
+                            'slot':[0,0,0,0],
                          }
             tmp['slot'+str(idx)] = traveller['id']
             if einfo['soulid'] != 0:
@@ -55,17 +57,29 @@ class role(gameobject):
             else:
                 traveller['soulid'] = 0
                 
-            if einfo['weaponid'] != 0:
-                weapon = {
+            if einfo['weaponrid'] != 0:
+                weaponr = {
                             'id':wl.local_id(),
-                            'baseid':einfo['weaponid'],
-                            'level':einfo['weaponlevel'],
-                            'skilllevel':einfo['weaponskilllevel'],
+                            'baseid':einfo['weaponrid'],
+                            'level':einfo['weaponrlevel'],
+                            'skilllevel':einfo['weaponrskilllevel'],
                         }
-                tmp['equipments'].append(weapon)
-                traveller['weaponid'] = weapon['id']
+                tmp['equipments'].append(weaponr)
+                traveller['slot'][data.EQUIP_WEAPONR] = weaponr['id']
             else:
-                traveller['weaponid'] = 0
+                traveller['slot'][data.EQUIP_WEAPONR]  = 0
+                
+            if einfo['weaponlid'] != 0:
+                weaponl = {
+                            'id':wl.local_id(),
+                            'baseid':einfo['weaponlid'],
+                            'level':einfo['weaponllevel'],
+                            'skilllevel':einfo['weaponlskilllevel'],
+                        }
+                tmp['equipments'].append(weaponl)
+                traveller['slot'][data.EQUIP_WEAPONL] = weaponl['id']
+            else:
+                traveller['slot'][data.EQUIP_WEAPONL]  = 0
                 
             if einfo['clothid'] != 0:
                 cloth = {
@@ -75,9 +89,9 @@ class role(gameobject):
                             'skilllevel':einfo['clothskilllevel'],
                         }
                 tmp['equipments'].append(cloth)
-                traveller['clothid'] = soul['id']
+                traveller['slot'][data.EQUIP_CLOTH] = soul['id']
             else:
-                traveller['soulid'] = 0
+                traveller['slot'][data.EQUIP_CLOTH] = 0
                 
             if einfo['trinketid'] != 0:
                 trinket = {
@@ -87,9 +101,9 @@ class role(gameobject):
                             'skilllevel':einfo['trinketskilllevel'],
                         }
                 tmp['equipments'].append(trinket)
-                traveller['trinketid'] = soul['id']
+                traveller['slot'][data.EQUIP_TRINKET] = soul['id']
             else:
-                traveller['trinketid'] = 0
+                traveller['slot'][data.EQUIP_TRINKET] = 0
                 
             tmp['travellers'].append(traveller)
             

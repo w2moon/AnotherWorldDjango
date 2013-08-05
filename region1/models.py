@@ -40,6 +40,29 @@ class role(models.Model):
     def getUserid(self):
         return self.userid
     
+    def getStage(self,stageid):
+        return self.get_object(self.stage_set,{'stage_id':stageid})
+    
+    def isCompleteStage(self,stageid,level):
+        if stageid == 0:
+            return True
+        stage = self.getStage(stageid)
+        return stage != None and (level == 1 or level <= stage.level)
+    
+    def completeStage(self,stageid,level):
+        stage = self.getStage(stageid)
+        if stage == None:
+            stage = self.stage_set.create(stage_id=stageid)
+            stage.level = level
+            stage.save()
+            return 0
+        
+        if level > stage.level :
+            stage.level = level
+            stage.save()
+            
+        return 1
+    
     def addReward(self,reward):
         
         equipments =[]
@@ -204,9 +227,13 @@ class role(models.Model):
         if soul != None:
             traveller.equip_soul(soul)
         
-        weapon = self.addEquip(travellerbase['weaponbaseid'])
-        if weapon != None:
-            traveller.equip_weapon(weapon)
+        weaponr = self.addEquip(travellerbase['weaponrbaseid'])
+        if weaponr != None:
+            traveller.equip_weaponr(weaponr)
+            
+        weaponl = self.addEquip(travellerbase['weaponlbaseid'])
+        if weaponl != None:
+            traveller.equip_weaponr(weaponl)
         
         cloth = self.addEquip(travellerbase['clothbaseid'])
         if cloth != None:
@@ -297,9 +324,13 @@ class role(models.Model):
                         player['souls'].append(soul.pack())
                         
                     
-                    if traveller.weaponid != 0:
-                        weapon = self.getEquipment(traveller.weaponid)
-                        player['equipments'].append(weapon.pack())
+                    if traveller.weaponrid != 0:
+                        weaponr = self.getEquipment(traveller.weaponrid)
+                        player['equipments'].append(weaponr.pack())
+                        
+                    if traveller.weaponlid != 0:
+                        weaponl = self.getEquipment(traveller.weaponlid)
+                        player['equipments'].append(weaponl.pack())
                         
                     
                     if traveller.clothid != 0:
@@ -450,7 +481,8 @@ class traveller(models.Model):
        
     soulid = models.IntegerField(max_length=4,default=0)
     
-    weaponid = models.IntegerField(max_length=4,default=0)
+    weaponrid = models.IntegerField(max_length=4,default=0)
+    weaponlid = models.IntegerField(max_length=4,default=0)
     clothid = models.IntegerField(max_length=4,default=0)
     trinketid = models.IntegerField(max_length=4,default=0)
     
@@ -468,6 +500,8 @@ class traveller(models.Model):
         for k in self._meta.fields:
             if k.name != 'owner': 
                 t[k.name] = getattr(self,k.name)
+                
+        t['slot'] = [self.weaponrid,self.weaponlid,self.clothid,self.trinketid]
                         
         return t
     
@@ -489,13 +523,22 @@ class traveller(models.Model):
         soul.save()
         self.save()
         
-    def takeoff_weapon(self):
-        if self.weaponid != 0:
-            weapon = self.owner.getEquipment(self.weaponid)
-            weapon.travellerid = 0
-            self.weaponid = 0
+    def takeoff_weaponr(self):
+        if self.weaponrid != 0:
+            weaponr = self.owner.getEquipment(self.weaponrid)
+            weaponr.travellerid = 0
+            self.weaponrid = 0
             
-            weapon.save()
+            weaponr.save()
+            self.save()
+            
+    def takeoff_weaponl(self):
+        if self.weaponlid != 0:
+            weaponl = self.owner.getEquipment(self.weaponlid)
+            weaponl.travellerid = 0
+            self.weaponlid = 0
+            
+            weaponl.save()
             self.save()
             
     def takeoff_cloth(self):
@@ -516,13 +559,22 @@ class traveller(models.Model):
             trinket.save()
             self.save()
         
-    def equip_weapon(self,weapon):
-        self.takeoff_weapon()
+    def equip_weaponr(self,weaponr):
+        self.takeoff_weaponr()
         
-        self.weaponid = weapon.id
-        weapon.travellerid = self.id
+        self.weaponrid = weaponr.id
+        weaponr.travellerid = self.id
         
-        weapon.save()
+        weaponr.save()
+        self.save()
+        
+    def equip_weaponl(self,weaponl):
+        self.takeoff_weaponl()
+        
+        self.weaponlid = weaponl.id
+        weaponl.travellerid = self.id
+        
+        weaponl.save()
         self.save()
         
     def equip_cloth(self,cloth):
@@ -556,3 +608,12 @@ class stage(models.Model):
     def __unicode__(self):
         return "stage %d" % (self.stage_id)
     
+class material(models.Model):
+    id = models.AutoField(primary_key=True)
+    owner = models.ForeignKey(role)
+    
+    baseid = models.IntegerField(max_length=4,default=0)
+    num = models.IntegerField(max_length=4,default=0)
+    
+    def __unicode__(self):
+        return "material %d" % (self.stage_id)

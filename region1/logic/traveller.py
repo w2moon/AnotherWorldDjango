@@ -4,7 +4,7 @@ Created on 2013-7-23
 @author: pengw
 '''
 from gameobject import gameobject
-
+import data
 class traveller(gameobject):
     def __init__(self,info,owner):
         self.info = info
@@ -62,15 +62,14 @@ class traveller(gameobject):
     def getProperty(self,name):
         v = 0
         
-        temp = self.getWeapon()
-        if temp != None:
-            v += temp.getBase()[name]
-        temp = self.getCloth()
-        if temp != None:
-            v += temp.getBase()[name]
-        temp = self.getTrinket()
-        if temp != None:
-            v += temp.getBase()[name]
+        
+        for i in xrange(0,data.EQUIP_NUM):
+            if self.info['slot'][i] != 0:
+                equip = self.owner.getEquipment(self.info['slot'][i])
+                if equip != None :
+                    v += equip.getBase()[name]
+                    
+                    
         temp = self.getSoul()
         if temp != None:
             v += temp.getBase()[name]
@@ -83,26 +82,20 @@ class traveller(gameobject):
     def getSkills(self):
         skills = []
         
+        for i in xrange(0,data.EQUIP_NUM):
+            if self.info['slot'][i] != 0:
+                equip = self.owner.getEquipment(self.info['slot'][i])
+                if equip != None and equip.hasSkill():
+                    skills.append([equip.getSkillId(),equip.getSkillLevel()])
+            
+        temp = self.getSoul()
+        if temp != None and temp.hasSkill():
+            skills.append([temp.getSkillId(),temp.getSkillLevel()])
+            
         if self.getSkill1Id() != 0:
             skills.append([self.getSkill1Id(),self.getSkill1Level()])
             
         if self.getSkill2Id() != 0:
             skills.append([self.getSkill2Id(),self.getSkill2Level()])
-        
-        temp = self.getWeapon()
-        if temp != None and temp.hasSkill():
-            skills.append([temp.getSkillId(),temp.getSkillLevel()])
-            
-        temp = self.getCloth()
-        if temp != None and temp.hasSkill():
-            skills.append([temp.getSkillId(),temp.getSkillLevel()])
-            
-        temp = self.getTrinket()
-        if temp != None and temp.hasSkill():
-            skills.append([temp.getSkillId(),temp.getSkillLevel()])
-            
-        temp = self.getSoul()
-        if temp != None and temp.hasSkill():
-            skills.append([temp.getSkillId(),temp.getSkillLevel()])
         
         return skills

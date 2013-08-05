@@ -7,7 +7,7 @@ Created on 2013-7-23
 
 from gameobject import gameobject
 from warrior import warrior
-
+import data
 class player(gameobject):
     
     def __init__(self,role,battlefield):
@@ -22,10 +22,16 @@ class player(gameobject):
             else:
                 self.warriors.append(None)
         
-        self.hero = self.warriors[0]
+        self.hero = self.warriors[data.HERO_IDX]
         
     def isDead(self):
-        return self.hero.isDead()
+        if self.hero != None:
+            return self.hero.isDead()
+        for w in self.warriors:
+            if w != None and not w.isDead():
+                return False
+            
+        return True
     
     def getWarriors(self):
         return self.warriors

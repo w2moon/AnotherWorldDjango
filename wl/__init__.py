@@ -79,6 +79,13 @@ def clamp(v,vmin,vmax):
         return vmax
     return v
 
+def dict_merge(d1,d2):
+    ret = {}
+    for k,v in d1.items():
+        ret[k] = d1[k] + d2[k]
+        
+    return ret
+
 def timezone_day_distance(t1,t2):
     return int((time.mktime((t1.year,t1.month,t1.day,0,0,0,0,0,0)) - time.mktime((t2.year,t2.month,t2.day,0,0,0,0,0,0)))/86400)
 

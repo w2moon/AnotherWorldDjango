@@ -74,6 +74,13 @@ def battle_pve(info):
     if r.hp < stageinfo['hpcost']:
         return RetCode.BATTLE_LOW_HP
     
+    if not r.isCompleteStage(stageinfo['stageneed'],info['level']-1):
+        return RetCode.BATTLE_NOT_COMPLETE_PRESTAGE
+    
+    if stageinfo['hpcost'] != 0:
+        r.hp = r.hp - stageinfo['hpcost']
+        r.save()
+    
     bf = logic.battlefield.battlefield(stageinfo,r.packforother())
     
     while not bf.isFinished():
