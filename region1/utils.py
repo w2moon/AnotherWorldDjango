@@ -5,7 +5,7 @@ utils
 >>> log_charge("1",1)
 >>> log_shop("1",1,1)
 >>> info = data.stage[1001]
->>> r = logic.role.role.create_from_enemy(info['enemy'])
+>>> r = logic.role.role.create_from_enemy(info['enemy'],1)
 """
 from django.utils import timezone
 
@@ -77,11 +77,19 @@ def battle_pve(info):
     if not r.isCompleteStage(stageinfo['stageneed'],info['level']-1):
         return RetCode.BATTLE_NOT_COMPLETE_PRESTAGE
     
+    has = False
+    for stageid in data.submaps[info['submap']]['stages']:
+        if stageid == info['stage_id']:
+            has = True
+    
+    if not has:
+        return RetCode.BATTLE_WRONG_MAP
+    
     if stageinfo['hpcost'] != 0:
         r.hp = r.hp - stageinfo['hpcost']
         r.save()
     
-    bf = logic.battlefield.battlefield(stageinfo,r.packforother())
+    bf = logic.battlefield.battlefield(stageinfo,r.packforother(),info['level'])
     
     while not bf.isFinished():
         bf.turn_process()

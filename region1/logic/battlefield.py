@@ -265,14 +265,15 @@ class battlefield(object):
                         }
         return target_funcs[target_type]()
 
-    def __init__(self,info,owner):
+    def __init__(self,info,owner,level):
         '''
         Constructor
         '''
+        self.level = level
         self.info = info
         self.owner = owner
         self.functask = wl.functask.functask()
-        roles = [role(owner),role.create_from_enemy(info['enemy'])]
+        roles = [role(owner),role.create_from_enemy(info['enemy'],level)]
         self.initBattle(roles)
         self.start()
         

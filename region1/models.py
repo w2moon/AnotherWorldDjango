@@ -37,6 +37,10 @@ class role(models.Model):
     
     SLOT_NUM = 5
     
+    COMPLETE_FIRST = 0
+    COMPLETE_LEVEL = 2
+    COMPLETE_OK = 1
+    
     def getUserid(self):
         return self.userid
     
@@ -55,15 +59,16 @@ class role(models.Model):
             stage = self.stage_set.create(stage_id=stageid)
             stage.level = level
             stage.save()
-            return 0
+            return role.COMPLETE_FIRST
         
         if level > stage.level :
             stage.level = level
             stage.save()
+            return role.COMPLETE_LEVEL
             
-        return 1
+        return role.COMPLETE_OK
     
-    def addReward(self,reward):
+    def addReward(self,reward,level):
         
         equipments =[]
         souls = []
@@ -77,7 +82,10 @@ class role(models.Model):
         addextratravellernum = 0
         for r in reward:
             if self.rand() < r[0]:
-                o = getattr(self,r[1])(*(r[2:]))
+                if r[1] == 'addCopper' or r[1] == 'addExp':
+                    o = getattr(self,r[1])(r[2]*level)
+                else:
+                    o = getattr(self,r[1])(*(r[2:]))
                 if o != None:
                     if r[1] == "addEquip":
                         equipments.append(o.pack())
@@ -90,7 +98,7 @@ class role(models.Model):
                         addhp += o['addhp']
                         addcopper += o['addcopper']
                         addgold += o['addgold']
-                        addgold += o['addgold']
+                        addlevel += o['addlevel']
                         addextrasoulnum += o['addextrasoulnum']
                         addextraequipmentnum += o['addextraequipmentnum']
                         addextratravellernum += o['addextratravellernum']
@@ -137,7 +145,7 @@ class role(models.Model):
                }
         
     def lotteryPool(self,pid):
-        return self.addReward(data.lotterypool[pid]['pool'])
+        return self.addReward(data.lotterypool[pid]['pool'],1)
         
     def addExtraSoulNum(self,v):
         self.extrasoulnum += v
@@ -209,6 +217,70 @@ class role(models.Model):
             return equip
         return None
     
+    def findBlueprint(self,blueprintid):
+        return self.get_object(self.blueprint_set,{'baseid':blueprintid})
+    
+    def addBlueprint(self,blueprintid):
+        blueinfo = data.get_info(data.blueprint,blueprintid)
+        if blueinfo != None:
+            blueprint = self.findBlueprint(blueprintid)
+            if blueprint != None:
+                return blueprint
+            blueprint = self.blueprint_set.create(baseid=blueprintid)
+            blueprint.save()
+            return blueprint
+        return None
+    
+    def composeBlueprint(self,blueprintid):
+        blueprint = self.findBlueprint(blueprintid)
+        if blueprint == None:
+            return None
+        
+        info = data.get_info(data.blueprint,blueprint.baseid)
+        
+        if self.copper < info['copper']:
+            return None
+        
+        for i in xrange(1,7):
+            if wl.tonumber(info["mid"+str(i)]) == 0:
+                continue
+            
+            material = self.findMaterial(wl.tonumber(info["mid"+str(i)]))
+            if material.num < wl.tonumber(info["mnum"+str(i)]):
+                return None
+            
+        self.copper -= info['copper']
+        self.save()
+        
+        for i in xrange(1,7):
+            if wl.tonumber(info["mid"+str(i)]) == 0:
+                continue
+            
+            material = self.findMaterial(wl.tonumber(info["mid"+str(i)]))
+            material.num -= wl.tonumber(info["mnum"+str(i)])
+            material.save()
+            
+        
+        return self.addEquip(info['equipid'])
+            
+            
+    
+    def findMaterial(self,materialid):
+        return self.get_object(self.material_set,{'baseid':materialid})
+    
+    def addMaterial(self,materialid,num):
+        info = data.get_info(data.material,materialid)
+        if info != None:
+            material = self.findMaterial(materialid)
+            if material == None:
+                material = self.material_set.create(baseid=materialid)
+            
+            material.num += num
+            material.save()
+            return material
+        return None
+        
+    
     
     def addTraveller(self,info,travellerbase):
         traveller = self.traveller_set.create()
@@ -270,6 +342,9 @@ class role(models.Model):
     
     def getEquipment(self,tid):
         return self.get_object(self.equipment_set,{'id':tid}) 
+    
+    def findEquip(self,bid):
+        return self.get_object(self.equipment_set,{'baseid':bid}) 
     
     def create_equipment(self,baseid):
         equipment = self.equipment_set.create(baseid=baseid)
@@ -416,6 +491,7 @@ class equipment(models.Model):
     
     skillexp = models.IntegerField(max_length=4,default=0)
     skilllevel = models.IntegerField(max_length=4,default=0)
+    
     
     
     def pack(self):
@@ -616,4 +692,13 @@ class material(models.Model):
     num = models.IntegerField(max_length=4,default=0)
     
     def __unicode__(self):
-        return "material %d" % (self.stage_id)
+        return "material %d" % (self.baseid)
+    
+class blueprint(models.Model):
+    id = models.AutoField(primary_key=True)
+    owner = models.ForeignKey(role)
+    
+    baseid = models.IntegerField(max_length=4,default=0)
+    
+    def __unicode__(self):
+        return "blueprint %d" % (self.baseid)

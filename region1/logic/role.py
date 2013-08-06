@@ -16,7 +16,7 @@ class role(gameobject):
     '''
     classdocs
     '''
-    def create_from_enemy(enemies):
+    def create_from_enemy(enemies,level):
         local_id = wl.local_id()
         tmp = {
                'id':local_id,
@@ -27,6 +27,7 @@ class role(gameobject):
                }
         
         idx = 0
+        factor = level
         for e in enemies:
             idx += 1
             if e[0] == 0:
@@ -35,13 +36,17 @@ class role(gameobject):
             einfo = data.enemy[e[0]]
             traveller = {
                             'id':wl.local_id(),
-                            'level':e[1],
+                            'level':e[1]*factor,
                             'skill1id':einfo['skill1id'],
-                            'skill1level':einfo['skill1level'],
+                            'skill1level':einfo['skill1level']*factor,
                             'skill2id':einfo['skill2id'],
-                            'skill2level':einfo['skill2level'],
+                            'skill2level':einfo['skill2level']*factor,
                             'nature':4,
                             'soulid':0,
+                            'MaxHP':einfo['MaxHP']*factor,
+                            'Attack':einfo['Attack']*factor,
+                            'Defense':einfo['Defense']*factor,
+                            'Heal':einfo['Heal']*factor,
                             'slot':[0,0,0,0],
                          }
             tmp['slot'+str(idx)] = traveller['id']
@@ -49,8 +54,8 @@ class role(gameobject):
                 soul = {
                             'id':wl.local_id(),
                             'baseid':einfo['soulid'],
-                            'level':einfo['soullevel'],
-                            'skilllevel':einfo['soulskilllevel'],
+                            'level':einfo['soullevel']*factor,
+                            'skilllevel':einfo['soulskilllevel']*factor,
                         }
                 tmp['souls'].append(soul)
                 traveller['soulid'] = soul['id']
@@ -61,8 +66,8 @@ class role(gameobject):
                 weaponr = {
                             'id':wl.local_id(),
                             'baseid':einfo['weaponrid'],
-                            'level':einfo['weaponrlevel'],
-                            'skilllevel':einfo['weaponrskilllevel'],
+                            'level':einfo['weaponrlevel']*factor,
+                            'skilllevel':einfo['weaponrskilllevel']*factor,
                         }
                 tmp['equipments'].append(weaponr)
                 traveller['slot'][data.EQUIP_WEAPONR] = weaponr['id']
@@ -73,8 +78,8 @@ class role(gameobject):
                 weaponl = {
                             'id':wl.local_id(),
                             'baseid':einfo['weaponlid'],
-                            'level':einfo['weaponllevel'],
-                            'skilllevel':einfo['weaponlskilllevel'],
+                            'level':einfo['weaponllevel']*factor,
+                            'skilllevel':einfo['weaponlskilllevel']*factor,
                         }
                 tmp['equipments'].append(weaponl)
                 traveller['slot'][data.EQUIP_WEAPONL] = weaponl['id']
@@ -85,8 +90,8 @@ class role(gameobject):
                 cloth = {
                             'id':wl.local_id(),
                             'baseid':einfo['clothid'],
-                            'level':einfo['clothlevel'],
-                            'skilllevel':einfo['clothskilllevel'],
+                            'level':einfo['clothlevel']*factor,
+                            'skilllevel':einfo['clothskilllevel']*factor,
                         }
                 tmp['equipments'].append(cloth)
                 traveller['slot'][data.EQUIP_CLOTH] = soul['id']
@@ -97,8 +102,8 @@ class role(gameobject):
                 trinket = {
                             'id':wl.local_id(),
                             'baseid':einfo['trinketid'],
-                            'level':einfo['trinketlevel'],
-                            'skilllevel':einfo['trinketskilllevel'],
+                            'level':einfo['trinketlevel']*factor,
+                            'skilllevel':einfo['trinketskilllevel']*factor,
                         }
                 tmp['equipments'].append(trinket)
                 traveller['slot'][data.EQUIP_TRINKET] = soul['id']

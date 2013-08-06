@@ -25,7 +25,7 @@ def do(info):
     battle stage test
     >>> r = utils.create_role('2','2','tester')
     >>> r.save()
-    >>> info={'code':'battle_stage','userid':'2','stage_id':1001,'level':1}
+    >>> info={'code':'battle_stage','userid':'2','stage_id':1001,'level':1,'submap':1}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.BATTLE_NOTHAVEHERO
     True
@@ -55,10 +55,32 @@ def do(info):
     ret['rc'] = utils.battle_pve(info)
     if ret['rc'] == RetCode.BATTLE_RESULT_WIN:
         role = utils.get_role(info['userid'])
-        ret['reward'] = role.addReward(data.stage[info['stage_id']]['reward'])
-        if role.completeStage(info['stage_id'],info['level']) == 0:
-            rewardfirst = role.addReward(data.stage[info['stage_id']]['rewardfirst'])
+        ret['reward'] = role.addReward(data.stage[info['stage_id']]['reward'],info['level'])
+        completestate = role.completeStage(info['stage_id'],info['level'])
+        if  completestate == role.COMPLETE_FIRST:
+            rewardfirst = role.addReward(data.stage[info['stage_id']]['rewardfirst'],info['level'])
             ret['reward'] = wl.dict_merge(ret['reward'],rewardfirst)
+        
+        if  completestate == role.COMPLETE_FIRST or completestate == role.COMPLETE_LEVEL:
+            completemap = True
+            submapinfo = data.submaps[info['submap']]
+            for stageid in submapinfo['stages']:
+                if not role.isCompleteStage(stageid,info['level']):
+                    completemap = False
+                    break
+                
+            if completemap:
+                trinket = None
+                if  completestate == role.COMPLETE_FIRST:
+                    trinket = role.addEquip(submapinfo['trinket'])
+                else:
+                    trinket = role.findEquip(submapinfo['trinket'])
+                    
+                trinket.level = info['level']
+                trinket.save()
+                
+                ret['trinket'] = trinket.pack()
+                
         role.save()
     else:
         ret['reward'] = {}

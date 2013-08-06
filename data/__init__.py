@@ -30,6 +30,9 @@ WEAPON_OFFHAND = 1
 WEAPON_ONEHAND = 2
 WEAPON_TWOHAND = 3
 
+COPPER_STAR_UP = [10,20,40,80,160,320,640,1280]
+
+mutation = [0.1,0.08,0.05,0.02,0.01,0.001]
 
 rolecfg = wl.csv_cfg("../AnotherWorldData/rolecfg.csv")
 
@@ -40,7 +43,10 @@ wl.csv_param(lotterypool,[ ["pool",[";",","]] ])
 rolelevel = wl.csv_idmap("../AnotherWorldData/rolelevel.csv")
 
 submaps = wl.csv_idmap("../AnotherWorldData/submaps.csv")
-wl.csv_param(submaps,[ ["reward",[";",","]],["stages",[","]] ])
+wl.csv_param(submaps,[ ["stages",[","]] ])
+
+material = wl.csv_idmap("../AnotherWorldData/material.csv")
+blueprint = wl.csv_idmap("../AnotherWorldData/blueprint.csv")
 
 enemy = wl.csv_idmap("../AnotherWorldData/enemy.csv")
 stage = wl.csv_idmap("../AnotherWorldData/stage.csv")
