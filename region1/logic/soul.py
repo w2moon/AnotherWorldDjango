@@ -33,6 +33,9 @@ class soul(gameobject):
     def setLevel(self,v):
         self.info['level'] = v
         
+    def getMaxLevel(self):
+        return data.rarityclass[self.base['rarityclass']]['maxlevel']
+        
     def getSkillLevel(self):
         return self.info['skilllevel']
     

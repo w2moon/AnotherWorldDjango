@@ -18,6 +18,7 @@ class equipment(gameobject):
         Constructor
         '''
         self.info = info
+        self.base = data.equipmentbase[self.info['baseid']]
     
     def getId(self):
         return self.info['id']
@@ -27,12 +28,15 @@ class equipment(gameobject):
     
     def getLevel(self):
         return self.info['level']
+
+    def getMaxLevel(self):
+        return data.rarityclass[self.base['rarityclass']]['maxlevel']
     
     def getSkillLevel(self):
         return self.info['skilllevel']
     
     def getBase(self):
-        return data.equipmentbase[self.info['baseid']]
+        return self.base
     
     def getSkillId(self):
         return self.getBase()['skillid']

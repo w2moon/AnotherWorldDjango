@@ -14,7 +14,7 @@ exec("from "+appname+" import utils")
 import data
 def do(info):
 	"""
-	traveller create
+	traveller modify
 	>>> info={'code':'traveller_modify','userid':'5','id':1,'name':'traveller','gender':0,'age':0,'img':'tester','soul':0,'weaponr':1,'weaponl':1,'cloth':2,'trinket':3}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.USERID_NOTEXIST

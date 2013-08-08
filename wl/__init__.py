@@ -81,7 +81,7 @@ def clamp(v,vmin,vmax):
 
 def dict_merge(d1,d2):
     ret = {}
-    for k,v in d1.items():
+    for k in d1:
         ret[k] = d1[k] + d2[k]
         
     return ret

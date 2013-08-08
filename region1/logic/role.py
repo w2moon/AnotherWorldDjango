@@ -54,6 +54,7 @@ class role(gameobject):
                 soul = {
                             'id':wl.local_id(),
                             'baseid':einfo['soulid'],
+                            'star':einfo['soulstar'],
                             'level':einfo['soullevel']*factor,
                             'skilllevel':einfo['soulskilllevel']*factor,
                         }

@@ -5,7 +5,6 @@ Created on 2013-7-24
 '''
 from gameobject import gameobject
 import skills
-import wl
 class skill(gameobject):
     
     def __init__(self,warrior,battlefield,level,skillbase):

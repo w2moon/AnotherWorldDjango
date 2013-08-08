@@ -4,7 +4,7 @@ Created on 2013-7-29
 @author: pengw
 '''
 def do(skill,trigger,event_targets):
-    params = skill.getBase().param
+    params = skill.getBase()['param']
     
     tasks = []
     

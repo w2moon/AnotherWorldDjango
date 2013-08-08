@@ -49,7 +49,7 @@ class warrior(gameobject):
         self.setMaxEnergy(maxenergy)
         self.setEnergy(0)
         
-        self.notify('battle_init')
+        self.notify('battle_init',None)
         
     def getProperty(self,name):
         v = (self.getBaseProperty(name) + self.getExtraProperty(name))*(1+self.getRateProperty(name))

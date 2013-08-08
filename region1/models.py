@@ -5,6 +5,7 @@ import time
 import re
 import data
 import wl
+import random as sysrand
 
 isdate = re.compile(r'^date')
 
@@ -178,6 +179,17 @@ class role(models.Model):
                 self.onLevelup()
         else:
             self.exp = 0
+            
+        for i in xrange(1,self.SLOT_NUM+1):
+            traveller = self.getTraveller(getattr(self,"slot"+str(i)))
+            if traveller == None:
+                continue
+            traveller.addExp(v)
+            soul = self.getSoul(traveller.soulid)
+            if soul == None:
+                continue
+            soul.addExp(v)
+            
         
     def addLevel(self,v):
         self.level = wl.clamp(self.level+v, 0, len(data.rolelevel))
@@ -280,7 +292,19 @@ class role(models.Model):
             return material
         return None
         
-    
+    def getRandList(self,tmin,tmax):
+        arr = []
+        for i in xrange(tmin,tmax+1):
+            arr.append(i)
+        ret = [-1]*len(arr)
+        
+        while len(arr) > 0:
+            idx = self.rand()*len(arr)
+            if ret[idx] != -1:
+                continue
+            ret[idx] = arr.pop()
+        
+        return ret
     
     def addTraveller(self,info,travellerbase):
         traveller = self.traveller_set.create()
@@ -289,11 +313,50 @@ class role(models.Model):
         traveller.age = info['age']
         traveller.img = info['img']
         
-        
+        """
         traveller.MaxHP = travellerbase['MaxHP']
         traveller.Attack = travellerbase['Attack']
         traveller.Defense = travellerbase['Defense']
         traveller.Heal = travellerbase['Heal']
+        
+        traveller.skill1id = travellerbase['skill1id']
+        traveller.skill2id = travellerbase['skill2id']
+        """
+        
+        #pro = [3,self.rand()*2,self.rand()*2,self.rand()*2]
+        
+        #idx = self.getRandList(0,len(pro)-1)
+        
+        idx = int(self.rand()*4)
+        
+        if idx == 0:
+            traveller.MaxHP = 10+self.rand()*2
+        else:
+            traveller.MaxHP = 15
+            
+        if idx == 1:
+            traveller.Attack = 1+self.rand()*2
+        else:
+            traveller.Attack = 4
+            
+        if idx == 2:
+            traveller.Defense = 1+self.rand()*2
+        else:
+            traveller.Defense = 4
+        
+        if idx == 3:
+            traveller.Heal = 1+self.rand()*2
+        else:
+            traveller.Heal = 4
+        
+        if info['ishuman'] == 1:
+            skills = None
+            if self.rand()<0.8:
+                skills = data.travellerskill[idx]['common']
+            else:
+                skills = data.travellerskill[idx]['uncommon']
+            traveller.skill1id = skills[int(self.rand()*len(skills))]
+        
         
         soul = self.addSoul(travellerbase['soulbaseid'])
         if soul != None:
@@ -371,7 +434,7 @@ class role(models.Model):
         return state
     
     def rand(self):
-        self.get_randstate().rand()
+        return self.get_randstate().rand()
         
     def save_rand(self):
         self.get_randstate().save()
@@ -492,6 +555,18 @@ class equipment(models.Model):
     skillexp = models.IntegerField(max_length=4,default=0)
     skilllevel = models.IntegerField(max_length=4,default=0)
     
+    def addExp(self,exp):
+        self.exp += exp
+        rarity = data.equipmentbase[self.baseid]['rarityclass']
+        maxlevel = data.rarityclass[rarity]['maxlevel']
+        needexp = data.get_levelup_exp(self.level,rarity)
+        while self.exp >= needexp and self.level < maxlevel:
+            self.level += 1
+            self.exp -= needexp
+            needexp = data.get_levelup_exp(self.level,rarity)
+            
+        if self.level >= maxlevel:
+            self.exp = 0
     
     
     def pack(self):
@@ -511,7 +586,7 @@ class soul(models.Model):
     
     travellerid = models.IntegerField(max_length=4,default=0)
     
-    star = models.IntegerField(max_length=4,default=1)
+    star = models.IntegerField(max_length=4,default=0)
     
     exp = models.IntegerField(max_length=4,default=0)
     level = models.IntegerField(max_length=4,default=1)
@@ -519,6 +594,18 @@ class soul(models.Model):
     skillexp = models.IntegerField(max_length=4,default=0)
     skilllevel = models.IntegerField(max_length=4,default=0)
     
+    def addExp(self,exp):
+        self.exp += exp
+        rarity = data.equipmentbase[self.baseid]['rarityclass']
+        maxlevel = data.rarityclass[rarity]['maxlevel']
+        needexp = data.get_levelup_exp(self.level,rarity)
+        while self.exp >= needexp and self.level < maxlevel:
+            self.level += 1
+            self.exp -= needexp
+            needexp = data.get_levelup_exp(self.level,rarity)
+            
+        if self.level >= maxlevel:
+            self.exp = 0
     
     def pack(self):
         t = {}
@@ -571,6 +658,16 @@ class traveller(models.Model):
     YOUNG = 1
     ADULT = 2
     ELDER = 3
+    
+    def addExp(self,exp):
+        if data.rolelevel.has_key(self.level + 1):
+            self.exp += exp
+            if self.exp >= data.rolelevel[self.level]['exp']:
+                self.level += 1
+                self.exp -= data.rolelevel[self.level]['exp']
+        else:
+            self.exp = 0
+    
     def pack(self):
         t = {}
         for k in self._meta.fields:

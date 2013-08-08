@@ -17,7 +17,6 @@ import gamelog.models as log
 
 import logic
 import data
-import wl
 
 arr = __file__.split('/')
 appname = arr[len(arr)-2]

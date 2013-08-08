@@ -5,8 +5,6 @@ Created on Apr 21, 2013
 '''
 
 from data.retcode import RetCode
-import data
-import wl
 
 arr = __file__.split('/')
 appname = arr[len(arr)-3]

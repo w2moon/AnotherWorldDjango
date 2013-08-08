@@ -67,15 +67,15 @@ class traveller(gameobject):
             if self.info['slot'][i] != 0:
                 equip = self.owner.getEquipment(self.info['slot'][i])
                 if equip != None :
-                    v += equip.getBase()[name]
+                    v += equip.getBase()[name]*(equip.getLevel()/equip.getMaxLevel())
                     
                     
         temp = self.getSoul()
         if temp != None:
-            v += temp.getBase()[name]
+            v += temp.getBase()[name]*(1+temp.getStar()*0.1)*(temp.getLevel()/temp.getMaxLevel())
         
         if self.info.has_key(name):   
-            v += self.info[name]
+            v += self.info[name]*self.getLevel()
         
         return v
     

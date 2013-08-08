@@ -6,7 +6,7 @@ Created on 2013-7-29
 def do(skill,trigger,event_targets):
     tasks = []
     
-    params = skill.getBase().param
+    params = skill.getBase()['param']
     targets = event_targets
     
     tasks.append([skill.delay,[0.4]])

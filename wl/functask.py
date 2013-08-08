@@ -3,6 +3,7 @@ Created on 2013-7-26
 
 @author: pengw
 '''
+import wl
 class functask(object):
     '''
     classdocs

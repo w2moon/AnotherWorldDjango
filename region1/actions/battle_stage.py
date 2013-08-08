@@ -3,7 +3,6 @@ Created on Apr 21, 2013
 
 @author: w2moon
 '''
-from django.utils import timezone
 
 
 from data.retcode import RetCode
@@ -29,13 +28,13 @@ def do(info):
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.BATTLE_NOTHAVEHERO
     True
-    >>> tinfo={'userid':'2','name':'traveller','gender':0,'age':0,'img':'tester'}
+    >>> tinfo={'userid':'2','name':'traveller','gender':0,'age':0,'img':'','ishuman':1}
     >>> travellerbase = wl.get_rand(data.travellerbase)
     >>> t = r.addTraveller(tinfo,travellerbase)
     >>> t.skill2id = 1202
     >>> t.save()
     >>> r.equipTraveller("slot1",t.id)
-    >>> tinfo={'userid':'2','name':'traveller','gender':0,'age':0,'img':'tester'}
+    >>> tinfo={'userid':'2','name':'traveller','gender':0,'age':0,'img':'','ishuman':1}
     >>> travellerbase = wl.get_rand(data.travellerbase)
     >>> t = r.addTraveller(tinfo,travellerbase)
     >>> t.skill2id = 2000
