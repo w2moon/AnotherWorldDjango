@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     
     'account',
     'gamelog',
+    'mail',
     'region1',
 )
 

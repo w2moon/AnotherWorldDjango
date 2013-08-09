@@ -42,5 +42,6 @@ def do(info):
 		
 	
 	ret['rc'] = RetCode.OK
-	ret['traveller'] = traveller.pack()
+	if traveller != None:
+		ret['traveller'] = traveller.pack()
 	return ret

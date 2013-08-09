@@ -38,6 +38,8 @@ class functask(object):
         while task != None and dt == None:
             dt = task[0](*(task[1]))
             if dt == None:
+                if len(self.tasks) == 0:
+                    break
                 task = self.tasks[0]
                 del self.tasks[0]
             

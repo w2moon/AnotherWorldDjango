@@ -69,7 +69,16 @@ class role(models.Model):
             
         return role.COMPLETE_OK
     
-    def addReward(self,reward,level):
+    def getMaxSoulNum(self):
+        return self.extrasoulnum + data.rolelevel[self.level]['maxsoulnum']
+    
+    def getMaxEquipNum(self):
+        return self.extrasoulnum + data.rolelevel[self.level]['maxequipnum']
+    
+    def getMaxTravellerNum(self):
+        return self.extrasoulnum + data.rolelevel[self.level]['maxtravellernum']
+    
+    def addReward(self,reward,level = 1):
         
         equipments =[]
         souls = []
@@ -307,6 +316,9 @@ class role(models.Model):
         return ret
     
     def addTraveller(self,info,travellerbase):
+        if self.traveller_set.count() >= self.getMaxTravellerNum():
+            return None
+        
         traveller = self.traveller_set.create()
         traveller.name = info['name']
         traveller.gender = info['gender']
@@ -323,9 +335,7 @@ class role(models.Model):
         traveller.skill2id = travellerbase['skill2id']
         """
         
-        #pro = [3,self.rand()*2,self.rand()*2,self.rand()*2]
         
-        #idx = self.getRandList(0,len(pro)-1)
         
         idx = int(self.rand()*4)
         
