@@ -7,7 +7,7 @@ Created on Apr 21, 2013
 from data.retcode import RetCode
 
 import mail
-
+import wl
 arr = __file__.split('/')
 appname = arr[len(arr)-3]
 utils = None
@@ -31,10 +31,13 @@ def do(info):
     ret['rc'] = RetCode.OK
     
     m = mail.get_mail(info['mailid'])
-    if not m.isReaded():
-        role = utils.get_role(info['userid'])
-        ret['reward'] = role.addReward(m.attachment)
-        role.save()
+    if not m.isReaded():  
+        if m.attachment != "":
+            role = utils.get_role(info['userid'])
+            reward = {'attachment':m.attachment}
+            wl.csv_param(reward,[ ['attachment',[";",","]] ])
+            ret['reward'] = role.addReward(reward['attachment'])
+            role.save()
         m.read()
     
     return ret

@@ -21,11 +21,15 @@ def do(info):
     >>> title = "hi"
     >>> content = "content"
     >>> attachment = ""
-    >>> m = mail.sys_add(title,content,attachment)
-    >>> m = mail.sys_add(title,content,attachment)
-    >>> mail.recieve_sys("13")[0]
+    >>> m1 = mail.sys_add(title,content,attachment)
+    >>> m2 = mail.sys_add(title,content,attachment)
     >>> info={'code':'mail_receive','userid':r.userid,}
     >>> ret = do(info)
+    >>> len(ret['mails']) == 2
+    True
+    >>> ret = do(info)
+    >>> len(ret['mails']) == 2
+    True
     """
     ret = dict()
     ret['rc'] = RetCode.OK

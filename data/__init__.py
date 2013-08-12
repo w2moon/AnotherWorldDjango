@@ -67,6 +67,9 @@ wl.csv_param(skillbase,[ ["condition",[";",","]],["param",[","]] ])
 rarityclass = wl.csv_idmap("../AnotherWorldData/rarityclass.csv")
 wl.csv_param(rarityclass,[ ["starupcopper",[","]] ])
 
+lang ={
+       }
+
 combineid = {}
 
 combineidex = {}

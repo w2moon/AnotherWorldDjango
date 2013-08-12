@@ -6,6 +6,7 @@ import re
 import data
 import wl
 import random as sysrand
+import mail
 
 isdate = re.compile(r'^date')
 
@@ -222,19 +223,35 @@ class role(models.Model):
         setattr(self,slot,travellerid)
         self.save()
         
+    def isFullSoul(self):
+        return self.getMaxSoulNum() <= self.soul_set.count()
+    
+    def isFullEquip(self):
+        return self.getMaxEquipNum() <= self.equipment_set.count()
+    
+    def isFullTraveller(self):
+        return self.getMaxTravellerNum() <= self.traveller_set.count()
+        
     def addSoul(self,soulid):
         soulbase = data.get_info(data.soulbase,soulid)
         if soulbase != None:
             soul = self.soul_set.create(baseid=soulid)
-            soul.save()
+            if not self.isFullSoul():
+                soul.save()
+            else:
+                mail.sys_send(data.lang['MAIL_TITLE_SOUL'], data.lang['MAIL_CONTENT_SOUL'], "1,addSoul,%d;" % soulid, self.userid)
             return soul
         return None
     
     def addEquip(self,equipid):
-        equipbase = data.get_info(data.soulbase,equipid)
+        equipbase = data.get_info(data.equipmentbase,equipid)
         if equipbase != None:
             equip = self.equipment_set.create(baseid=equipid)
-            equip.save()
+            if not self.isFullEquip():
+                equip.save()
+            else:
+                mail.sys_send(data.lang['MAIL_TITLE_EQUIP'], data.lang['MAIL_CONTENT_EQUIP'], "1,addEquip,%d;" % equipid, self.userid)
+            
             return equip
         return None
     
