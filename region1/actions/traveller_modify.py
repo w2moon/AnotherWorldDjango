@@ -52,6 +52,12 @@ def do(info):
 				if oldtraveller != None:
 					oldtraveller.soulid = 0
 					oldtraveller.save()
+					
+			if traveller.soulid != 0:
+				oldsoul = role.getSoul(traveller.soulid)
+				oldsoul.travellerid = 0
+				oldsoul.save()
+				
 			soul.travellerid = traveller.id
 			traveller.soulid = info['soul']
 			soul.save()

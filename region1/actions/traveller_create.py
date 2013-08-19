@@ -44,4 +44,22 @@ def do(info):
 	ret['rc'] = RetCode.OK
 	if traveller != None:
 		ret['traveller'] = traveller.pack()
+		if traveller.soulid != 0:
+			ret['soul'] = role.getSoul(traveller.soulid).pack()
+		ret['equips'] = []
+		if traveller.weaponrid != 0:
+			ret['equips'].append( role.getEquipment(traveller.weaponrid).pack() )
+		if traveller.weaponlid != 0:
+			ret['equips'].append( role.getEquipment(traveller.weaponlid).pack() )
+		if traveller.clothid != 0:
+			ret['equips'].append( role.getEquipment(traveller.clothid).pack() )
+		if traveller.trinketid != 0:
+			ret['equips'].append( role.getEquipment(traveller.trinketid).pack() )
+			
+		if role.slot5 == 0:
+			role.slot5 = traveller.id
+			role.name = traveller.name
+			if role.level == 0:
+				role.level = 1
+			role.save()
 	return ret

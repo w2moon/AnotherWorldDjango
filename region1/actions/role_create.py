@@ -20,7 +20,7 @@ exec("from "+appname+" import utils")
 def do(info):
     """
     role create
-    >>> info={'code':'role_create','userid':'5','name':'tester','img':'','ishuman':1}
+    >>> info={'code':'role_create','userid':'5','name':'tester'}
     >>> ret = do(info)
     >>> ret['rc'] == RetCode.USERID_NOTEXIST
     True
