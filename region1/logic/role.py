@@ -16,7 +16,88 @@ class role(gameobject):
     '''
     classdocs
     '''
-    def create_from_enemy(enemies,level):
+    def create_enemy(tmp,idx,factor,eid,elevel):
+        einfo = data.enemy[eid]
+        traveller = {
+                        'id':wl.local_id(),
+                        'level':elevel*factor,
+                        'skill1id':einfo['skill1id'],
+                        'skill1level':einfo['skill1level']*factor,
+                        'skill2id':einfo['skill2id'],
+                        'skill2level':einfo['skill2level']*factor,
+                        'nature':4,
+                        'soulid':0,
+                        'MaxHP':einfo['MaxHP']*factor,
+                        'Attack':einfo['Attack']*factor,
+                        'Defense':einfo['Defense']*factor,
+                        'Heal':einfo['Heal']*factor,
+                        'slot':[0,0,0,0],
+                     }
+        tmp['slot'+str(idx)] = traveller['id']
+        if einfo['soulid'] != 0:
+            soul = {
+                        'id':wl.local_id(),
+                        'baseid':einfo['soulid'],
+                        'star':einfo['soulstar'],
+                        'level':einfo['soullevel']*factor,
+                        'skilllevel':einfo['soulskilllevel']*factor,
+                    }
+            tmp['souls'].append(soul)
+            traveller['soulid'] = soul['id']
+        else:
+            traveller['soulid'] = 0
+            
+        if einfo['weaponrid'] != 0:
+            weaponr = {
+                        'id':wl.local_id(),
+                        'baseid':einfo['weaponrid'],
+                        'level':einfo['weaponrlevel']*factor,
+                        'skilllevel':einfo['weaponrskilllevel']*factor,
+                    }
+            tmp['equipments'].append(weaponr)
+            traveller['slot'][data.EQUIP_WEAPONR] = weaponr['id']
+        else:
+            traveller['slot'][data.EQUIP_WEAPONR]  = 0
+            
+        if einfo['weaponlid'] != 0:
+            weaponl = {
+                        'id':wl.local_id(),
+                        'baseid':einfo['weaponlid'],
+                        'level':einfo['weaponllevel']*factor,
+                        'skilllevel':einfo['weaponlskilllevel']*factor,
+                    }
+            tmp['equipments'].append(weaponl)
+            traveller['slot'][data.EQUIP_WEAPONL] = weaponl['id']
+        else:
+            traveller['slot'][data.EQUIP_WEAPONL]  = 0
+            
+        if einfo['clothid'] != 0:
+            cloth = {
+                        'id':wl.local_id(),
+                        'baseid':einfo['clothid'],
+                        'level':einfo['clothlevel']*factor,
+                        'skilllevel':einfo['clothskilllevel']*factor,
+                    }
+            tmp['equipments'].append(cloth)
+            traveller['slot'][data.EQUIP_CLOTH] = soul['id']
+        else:
+            traveller['slot'][data.EQUIP_CLOTH] = 0
+            
+        if einfo['trinketid'] != 0:
+            trinket = {
+                        'id':wl.local_id(),
+                        'baseid':einfo['trinketid'],
+                        'level':einfo['trinketlevel']*factor,
+                        'skilllevel':einfo['trinketskilllevel']*factor,
+                    }
+            tmp['equipments'].append(trinket)
+            traveller['slot'][data.EQUIP_TRINKET] = soul['id']
+        else:
+            traveller['slot'][data.EQUIP_TRINKET] = 0
+            
+        tmp['travellers'].append(traveller)
+        
+    def create_from_enemy(enemies,level,heros):
         local_id = wl.local_id()
         tmp = {
                'id':local_id,
@@ -33,92 +114,18 @@ class role(gameobject):
             if e[0] == 0:
                 tmp['slot'+str(idx)] = 0
                 continue
-            einfo = data.enemy[e[0]]
-            traveller = {
-                            'id':wl.local_id(),
-                            'level':e[1]*factor,
-                            'skill1id':einfo['skill1id'],
-                            'skill1level':einfo['skill1level']*factor,
-                            'skill2id':einfo['skill2id'],
-                            'skill2level':einfo['skill2level']*factor,
-                            'nature':4,
-                            'soulid':0,
-                            'MaxHP':einfo['MaxHP']*factor,
-                            'Attack':einfo['Attack']*factor,
-                            'Defense':einfo['Defense']*factor,
-                            'Heal':einfo['Heal']*factor,
-                            'slot':[0,0,0,0],
-                         }
-            tmp['slot'+str(idx)] = traveller['id']
-            if einfo['soulid'] != 0:
-                soul = {
-                            'id':wl.local_id(),
-                            'baseid':einfo['soulid'],
-                            'star':einfo['soulstar'],
-                            'level':einfo['soullevel']*factor,
-                            'skilllevel':einfo['soulskilllevel']*factor,
-                        }
-                tmp['souls'].append(soul)
-                traveller['soulid'] = soul['id']
-            else:
-                traveller['soulid'] = 0
-                
-            if einfo['weaponrid'] != 0:
-                weaponr = {
-                            'id':wl.local_id(),
-                            'baseid':einfo['weaponrid'],
-                            'level':einfo['weaponrlevel']*factor,
-                            'skilllevel':einfo['weaponrskilllevel']*factor,
-                        }
-                tmp['equipments'].append(weaponr)
-                traveller['slot'][data.EQUIP_WEAPONR] = weaponr['id']
-            else:
-                traveller['slot'][data.EQUIP_WEAPONR]  = 0
-                
-            if einfo['weaponlid'] != 0:
-                weaponl = {
-                            'id':wl.local_id(),
-                            'baseid':einfo['weaponlid'],
-                            'level':einfo['weaponllevel']*factor,
-                            'skilllevel':einfo['weaponlskilllevel']*factor,
-                        }
-                tmp['equipments'].append(weaponl)
-                traveller['slot'][data.EQUIP_WEAPONL] = weaponl['id']
-            else:
-                traveller['slot'][data.EQUIP_WEAPONL]  = 0
-                
-            if einfo['clothid'] != 0:
-                cloth = {
-                            'id':wl.local_id(),
-                            'baseid':einfo['clothid'],
-                            'level':einfo['clothlevel']*factor,
-                            'skilllevel':einfo['clothskilllevel']*factor,
-                        }
-                tmp['equipments'].append(cloth)
-                traveller['slot'][data.EQUIP_CLOTH] = soul['id']
-            else:
-                traveller['slot'][data.EQUIP_CLOTH] = 0
-                
-            if einfo['trinketid'] != 0:
-                trinket = {
-                            'id':wl.local_id(),
-                            'baseid':einfo['trinketid'],
-                            'level':einfo['trinketlevel']*factor,
-                            'skilllevel':einfo['trinketskilllevel']*factor,
-                        }
-                tmp['equipments'].append(trinket)
-                traveller['slot'][data.EQUIP_TRINKET] = soul['id']
-            else:
-                traveller['slot'][data.EQUIP_TRINKET] = 0
-                
-            tmp['travellers'].append(traveller)
+            role.create_enemy(tmp,idx,factor,e[0],e[1])
             
         for i in xrange(idx+1,6):
             tmp['slot'+str(i)] = 0
             
+        for e in heros:
+            role.create_enemy(tmp,data.HERO_IDX,factor,e[0],e[1])
+            
         return role(tmp)
                 
             
+    create_enemy = staticmethod(create_enemy)
     create_from_enemy = staticmethod(create_from_enemy)
 
 

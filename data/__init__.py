@@ -48,7 +48,7 @@ blueprint = wl.csv_idmap("../AnotherWorldData/blueprint.csv")
 
 enemy = wl.csv_idmap("../AnotherWorldData/enemy.csv")
 stage = wl.csv_idmap("../AnotherWorldData/stage.csv")
-wl.csv_param(stage,[ ["rewardfirst",[";",","]],["reward",[";",","]],["enemy",[";",","]] ])
+wl.csv_param(stage,[ ["rewardfirst",[";",","]],["reward",[";",","]],["enemy",[";",","]],["hero",[";",","]] ])
 
 travellerbase = wl.csv_idmap("../AnotherWorldData/travellerbase.csv")
 

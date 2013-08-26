@@ -273,7 +273,7 @@ class battlefield(object):
         self.info = info
         self.owner = owner
         self.functask = wl.functask.functask()
-        roles = [role(owner),role.create_from_enemy(info['enemy'],level)]
+        roles = [role(owner),role.create_from_enemy(info['enemy'],level,info['hero'])]
         self.initBattle(roles)
         self.start()
         
