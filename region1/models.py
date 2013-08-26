@@ -475,6 +475,10 @@ class role(models.Model):
         player['souls'] = []
         player['travellers'] = []
         
+        
+        
+        
+        
         for i in xrange(1,self.SLOT_NUM+1):
             slotid = 'slot'+str(i)
             player[slotid] = getattr(self,slotid)
@@ -530,6 +534,18 @@ class role(models.Model):
         player['travellers'] = []
         for traveller in self.traveller_set.all():
             player['travellers'].append(traveller.pack())
+            
+        player['stages'] = {}
+        for stage in self.stage_set.all():
+            player['stages'][stage.stage_id] = stage.level
+            
+        player['blueprints'] = []
+        for blueprint in self.stage_set.all():
+            player['blueprints'].append(blueprint.baseid);
+            
+        player['materials'] = {}
+        for material in self.material_set.all():
+            player['materials'][material.baseid] = material.num
         
         return player
       
