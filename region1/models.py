@@ -114,11 +114,11 @@ class role(models.Model):
                         addextraequipmentnum += o['addextraequipmentnum']
                         addextratravellernum += o['addextratravellernum']
                     elif r[1] == "addExp":
-                        addexp += r[2]
+                        addexp += r[2]*level
                     elif r[1] == "addHP":
                         addhp += r[2]
                     elif r[1] == "addCopper":
-                        addcopper += r[2]
+                        addcopper += r[2]*level
                     elif r[1] == "addGold":
                         addgold += r[2]
                     elif r[1] == "addLevel":
