@@ -52,6 +52,9 @@ def do(info):
     ret = dict()
     
     ret['rc'] = utils.battle_pve(info)
+    ret['level'] = info['level']
+    ret['stage_id'] = info['stage_id']
+    ret['submap'] = info['submap']
     if ret['rc'] == RetCode.BATTLE_RESULT_WIN:
         role = utils.get_role(info['userid'])
         ret['reward'] = role.addReward(data.stage[info['stage_id']]['reward'],info['level'])
