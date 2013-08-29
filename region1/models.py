@@ -180,14 +180,14 @@ class role(models.Model):
         self.hp = data.rolelevel[self.level]['maxhp']
         
     def addExp(self,v):
-        if data.rolelevel.has_key(self.level + 1):
-            self.exp += v
-            if self.exp >= data.rolelevel[self.level]['exp']:
-                self.level += 1
-                self.exp -= data.rolelevel[self.level]['exp']
+        maxlevel = len(data.rolelevel)
+        self.exp += v
+        while self.exp >= data.rolelevel[self.level]['exp'] and self.level < maxlevel:
+            self.level += 1
+            self.exp -= data.rolelevel[self.level]['exp']
                 
-                self.onLevelup()
-        else:
+            self.onLevelup()
+        if self.level >= maxlevel:
             self.exp = 0
             
         for i in xrange(1,self.SLOT_NUM+1):
