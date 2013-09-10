@@ -78,13 +78,14 @@ def do(info):
             ret['rc'] = RetCode.STARUP_NOT_SAME_SOUL
         else:
             rarityclass = data.rarityclass[data.soulbase[s1.baseid]['rarityclass']]
-            if rarityclass['starupcopper'][s1.star] > role.copper:
+            star = wl.clamp(s1.star + s2.star + 1,0,len(rarityclass['starupcopper']))
+            if rarityclass['starupcopper'][star] > role.copper:
                 ret['rc'] = RetCode.STARUP_NOT_ENOUGH_COPPER
             elif s1.star >= len(rarityclass['starupcopper']) or s2.star >= len(rarityclass['starupcopper']):
                 ret['rc'] = RetCode.STARUP_ALREADY_MAX_STAR
             elif s1.level == rarityclass['maxlevel'] and s2.level == rarityclass['maxlevel']:
-                role.copper -= rarityclass['starupcopper'][s1.star]
-                s1.star = wl.clamp(s1.star + s2.star + 1,0,len(rarityclass['starupcopper']))
+                role.copper -= rarityclass['starupcopper'][star]
+                s1.star = star
                 s1.exp = 0
                 s1.level = 0
                 if s2.travellerid != 0:
