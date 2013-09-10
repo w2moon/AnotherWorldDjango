@@ -83,6 +83,8 @@ class role(models.Model):
         
         equipments =[]
         souls = []
+        blueprints = []
+        materials = {}
         addexp = 0
         addhp = 0
         addcopper = 0
@@ -102,9 +104,18 @@ class role(models.Model):
                         equipments.append(o.pack())
                     elif r[1] == "addSoul":
                         souls.append(o.pack())
+                    elif r[1] == "addBlueprint":
+                        blueprints.append(r[2])
+                    elif r[1] == "addMaterial":
+                        if materials.has_key(r[2]):
+                            materials[r[2]] = materials[r[2]]+1
+                        else:
+                            materials[r[2]] = 1;
                     elif r[1] == "lotteryPool":
                         equipments = equipments + o['equipments']
                         souls = souls + o['souls']
+                        blueprints = blueprints + o['blueprints']
+                        materials = wl.dict_merge(materials,o['materials'])
                         addexp += o['addexp']
                         addhp += o['addhp']
                         addcopper += o['addcopper']
@@ -199,6 +210,8 @@ class role(models.Model):
             if soul == None:
                 continue
             soul.addExp(v)
+            
+ 
             
         
     def addLevel(self,v):
