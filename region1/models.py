@@ -164,6 +164,8 @@ class role(models.Model):
                
                'equipments' : equipments,
                'souls' : souls,
+               'blueprints':blueprints,
+               'materials':materials,
                }
         
     def lotteryPool(self,pid):
