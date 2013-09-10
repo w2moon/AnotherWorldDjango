@@ -95,6 +95,8 @@ def do(info):
                 s2.delete()
                 s1.save()
                 
+                ret['soul'] = s1.pack()
+                
             else:
                 ret['rc'] = RetCode.STARUP_NOT_FULL_LEVEL
             

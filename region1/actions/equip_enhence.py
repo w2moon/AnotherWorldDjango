@@ -71,6 +71,18 @@ def do(info):
         return ret
     
     for e in equips:
+        if e.travellerid != 0:
+            traveller = role.getTraveller(e.travellerid)
+            if traveller.weaponrid == e.id :
+                traveller.weaponrid = 0
+            elif traveller.weaponlid == e.id :
+                traveller.weaponlid = 0
+            elif traveller.clothid == e.id:
+                traveller.clothid = 0
+            elif traveller.trinketid == e.id:
+                traveller.trinketid = 0
+                
+            traveller.save()
         e.delete()
         
     role.copper -= copper
