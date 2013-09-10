@@ -79,12 +79,12 @@ def do(info):
         else:
             rarityclass = data.rarityclass[data.soulbase[s1.baseid]['rarityclass']]
             star = wl.clamp(s1.star + s2.star + 1,0,len(rarityclass['starupcopper']))
-            if rarityclass['starupcopper'][star] > role.copper:
+            if rarityclass['starupcopper'][star-1] > role.copper:
                 ret['rc'] = RetCode.STARUP_NOT_ENOUGH_COPPER
             elif s1.star >= len(rarityclass['starupcopper']) or s2.star >= len(rarityclass['starupcopper']):
                 ret['rc'] = RetCode.STARUP_ALREADY_MAX_STAR
             elif s1.level == rarityclass['maxlevel'] and s2.level == rarityclass['maxlevel']:
-                role.copper -= rarityclass['starupcopper'][star]
+                role.copper -= rarityclass['starupcopper'][star-1]
                 s1.star = star
                 s1.exp = 0
                 s1.level = 0
