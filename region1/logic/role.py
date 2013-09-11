@@ -120,7 +120,8 @@ class role(gameobject):
             tmp['slot'+str(i)] = 0
             
         for e in heros:
-            role.create_enemy(tmp,data.HERO_IDX,factor,e[0],e[1])
+            if e[0] != 0:
+                role.create_enemy(tmp,data.HERO_IDX,factor,e[0],e[1])
             
         return role(tmp)
                 

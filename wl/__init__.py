@@ -82,7 +82,10 @@ def clamp(v,vmin,vmax):
 def dict_merge(d1,d2):
     ret = {}
     for k in d1:
-        ret[k] = d1[k] + d2[k]
+        if type(d1[k]) == dict:
+            ret[k] = dict_merge(d1[k],d2[k])
+        else:
+            ret[k] = d1[k] + d2[k]
         
     return ret
 

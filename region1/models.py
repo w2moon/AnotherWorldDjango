@@ -270,6 +270,13 @@ class role(models.Model):
             return equip
         return None
     
+    def meet(self,soulbaseid):
+        result = self.get_object(self.meeted_set,{'soulbaseid':soulbaseid})
+        if result != None:
+            return
+        result = self.meeted_set.create(soulbaseid=soulbaseid)
+        result.save()
+    
     def findBlueprint(self,blueprintid):
         return self.get_object(self.blueprint_set,{'baseid':blueprintid})
     
@@ -556,11 +563,15 @@ class role(models.Model):
             
         player['blueprints'] = []
         for blueprint in self.stage_set.all():
-            player['blueprints'].append(blueprint.baseid);
+            player['blueprints'].append(blueprint.baseid)
             
         player['materials'] = {}
         for material in self.material_set.all():
             player['materials'][material.baseid] = material.num
+        
+        player['meeted'] = []
+        for meet in self.meeted_set.all():
+            player['meeted'].append(meet.soulbaseid)
         
         return player
       
@@ -857,3 +868,11 @@ class blueprint(models.Model):
     
     def __unicode__(self):
         return "blueprint %d" % (self.baseid)
+    
+class meeted(models.Model):
+    id = models.AutoField(primary_key = True)
+    owner = models.ForeignKey(role)
+    soulbaseid = models.IntegerField(max_length=4,default=0)
+    
+    def __unicode__(self):
+        return "meeted %d" % (self.soulbaseid)

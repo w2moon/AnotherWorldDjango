@@ -5,7 +5,7 @@ utils
 >>> log_charge("1",1)
 >>> log_shop("1",1,1)
 >>> info = data.stage[1001]
->>> r = logic.role.role.create_from_enemy(info['enemy'],1)
+>>> r = logic.role.role.create_from_enemy(info['enemy'],1,info['hero'])
 """
 from django.utils import timezone
 
@@ -87,6 +87,14 @@ def battle_pve(info):
     if stageinfo['hpcost'] != 0:
         r.hp = r.hp - stageinfo['hpcost']
         r.save()
+        
+    for e in stageinfo['enemy']:
+        if e[0] != 0:
+            r.meet(data.enemy[e[0]]['soulid'])
+        
+    for e in stageinfo['hero']:
+        if e[0] != 0:
+            r.meet(data.enemy[e[0]]['soulid'])
     
     bf = logic.battlefield.battlefield(stageinfo,r.packforother(),info['level'])
     
