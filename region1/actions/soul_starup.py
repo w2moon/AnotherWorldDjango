@@ -88,11 +88,42 @@ def do(info):
                 s1.star = star
                 s1.exp = 0
                 s1.level = 0
-                if s2.travellerid != 0:
+                
+                if s1.travellerid != 0 and s2.travellerid != 0:
+                    if role.slot5 == s1.travellerid:
+                                                
+                        traveller = role.getTraveller(s2.travellerid)
+                        s2.travellerid = 0
+                        traveller.soulid = 0
+                        traveller.save()
+                        
+                    elif role.slot5 == s2.travellerid:
+                        traveller = role.getTraveller(s1.travellerid)
+                        s1.travellerid = 0
+                        traveller.soulid = 0
+                        traveller.save()
+                        
+                        traveller = role.getTraveller(s2.travellerid)
+                        s2.travellerid = 0
+                        traveller.soulid = s1.id
+                        s1.travellerid = traveller.id
+                        traveller.save()
+                      
+                    else:
+                        
+                        traveller = role.getTraveller(s2.travellerid)
+                        s2.travellerid = 0
+                        traveller.soulid = 0
+                        traveller.save()
+                        
+                                     
+                elif s2.travellerid != 0:
                     traveller = role.getTraveller(s2.travellerid)
                     s2.travellerid = 0
-                    traveller.soulid = 0
+                    traveller.soulid = s1.id
+                    s1.travellerid = traveller.id
                     traveller.save()
+                    
                 s2.delete()
                 s1.save()
                 

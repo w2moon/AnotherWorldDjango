@@ -78,6 +78,12 @@ def do(info):
                         soul.travellerid = traveller.id
                         traveller.save()
                         soul.save()
+                        
+                        traveller = role.getTraveller(s2.travellerid)
+                        s2.travellerid = 0
+                        traveller.soulid = 0
+                        traveller.save()
+                        
                     elif role.slot5 == s2.travellerid:
                         traveller = role.getTraveller(s2.travellerid)
                         s2.travellerid = 0
@@ -85,6 +91,11 @@ def do(info):
                         soul.travellerid = traveller.id
                         traveller.save()
                         soul.save()
+                        
+                        traveller = role.getTraveller(s1.travellerid)
+                        s1.travellerid = 0
+                        traveller.soulid = 0
+                        traveller.save()
                     else:
                         traveller = role.getTraveller(s1.travellerid)
                         s1.travellerid = 0
@@ -105,6 +116,7 @@ def do(info):
                     traveller.soulid = soul.id
                     soul.travellerid = traveller.id
                     traveller.save()
+                    soul.save()
                     
                 elif s2.travellerid != 0:
                     traveller = role.getTraveller(s2.travellerid)
@@ -112,6 +124,7 @@ def do(info):
                     traveller.soulid = soul.id
                     soul.travellerid = traveller.id
                     traveller.save()
+                    soul.save()
                 
                 s1.delete()
                 s2.delete()
