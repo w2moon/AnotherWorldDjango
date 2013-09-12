@@ -108,9 +108,9 @@ class role(models.Model):
                         blueprints.append(r[2])
                     elif r[1] == "addMaterial":
                         if materials.has_key(r[2]):
-                            materials[r[2]] = materials[r[2]]+1
+                            materials[r[2]] = materials[r[2]]+r[3]
                         else:
-                            materials[r[2]] = 1;
+                            materials[r[2]] = r[3];
                     elif r[1] == "lotteryPool":
                         equipments = equipments + o['equipments']
                         souls = souls + o['souls']
