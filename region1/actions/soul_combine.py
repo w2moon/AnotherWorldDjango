@@ -63,26 +63,59 @@ def do(info):
             else:
                 role.copper -= rarityclass['combinecopper']
                 role.save()
-                
-                if s1.travellerid != 0:
-                    traveller = role.getTraveller(s1.travellerid)
-                    s1.travellerid = 0
-                    traveller.soulid = 0
-                    traveller.save()
-                    
-                if s2.travellerid != 0:
-                    traveller = role.getTraveller(s2.travellerid)
-                    s2.travellerid = 0
-                    traveller.soulid = 0
-                    traveller.save()
-                    
-                s1.delete()
-                s2.delete()
-                
+                                          
                 if role.rand() < rarityclass['mutation']:
                     ids = data.mutation[rarityclass['id']]
                     bid = ids[int(len(ids)*role.rand())]
+                    
                 soul = role.addSoul(bid)
+                
+                if s1.travellerid != 0 and s2.travellerid != 0:
+                    if role.slot5 == s1.travellerid:
+                        traveller = role.getTraveller(s1.travellerid)
+                        s1.travellerid = 0
+                        traveller.soulid = soul.id
+                        soul.travellerid = traveller.id
+                        traveller.save()
+                        soul.save()
+                    elif role.slot5 == s2.travellerid:
+                        traveller = role.getTraveller(s2.travellerid)
+                        s2.travellerid = 0
+                        traveller.soulid = soul.id
+                        soul.travellerid = traveller.id
+                        traveller.save()
+                        soul.save()
+                    else:
+                        traveller = role.getTraveller(s1.travellerid)
+                        s1.travellerid = 0
+                        traveller.soulid = soul.id
+                        soul.travellerid = traveller.id
+                        traveller.save()
+                        soul.save()
+                        
+                        traveller = role.getTraveller(s2.travellerid)
+                        s2.travellerid = 0
+                        traveller.soulid = 0
+                        traveller.save()
+                        
+                        
+                elif s1.travellerid != 0:
+                    traveller = role.getTraveller(s1.travellerid)
+                    s1.travellerid = 0
+                    traveller.soulid = soul.id
+                    soul.travellerid = traveller.id
+                    traveller.save()
+                    
+                elif s2.travellerid != 0:
+                    traveller = role.getTraveller(s2.travellerid)
+                    s2.travellerid = 0
+                    traveller.soulid = soul.id
+                    soul.travellerid = traveller.id
+                    traveller.save()
+                
+                s1.delete()
+                s2.delete()
+                
                 ret['soul'] = soul.pack()
        
     return ret
