@@ -251,6 +251,7 @@ class role(models.Model):
         soulbase = data.get_info(data.soulbase,soulid)
         if soulbase != None:
             soul = self.soul_set.create(baseid=soulid)
+            self.meet(soulid)
             if not self.isFullSoul():
                 soul.save()
             else:

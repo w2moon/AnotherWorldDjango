@@ -70,6 +70,7 @@ def do(info):
                     
                 soul = role.addSoul(bid)
                 
+                
                 if s1.travellerid != 0 and s2.travellerid != 0:
                     if role.slot5 == s1.travellerid:
                         traveller = role.getTraveller(s1.travellerid)
