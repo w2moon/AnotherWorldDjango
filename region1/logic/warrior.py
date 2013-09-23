@@ -184,13 +184,13 @@ class warrior(gameobject):
         return self.battlefield.rand()
     
     def incHP(self,v):
-        isCrit = self.rand() < self.getProperty('Crit')
-        if isCrit:
-            v *= 2
+        #isCrit = self.rand() < self.getProperty('Crit')
+        #if isCrit:
+        #    v *= 2
             
         self.setHP(wl.clamp(self.getHP()+v,0,self.getMaxHP()))
         
-        self.notify('incHP',v,isCrit)
+        self.notify('incHP',v)
         
     def decHP(self,v):
         
@@ -198,12 +198,12 @@ class warrior(gameobject):
             self.notify('dodge')
             return
         
-        isCrit = self.rand() < self.getProperty('Crit')
-        if isCrit:
-            v *= 2
+        #isCrit = self.rand() < self.getProperty('Crit')
+        #if isCrit:
+        #    v *= 2
             
         self.setHP(wl.clamp(self.getHP()-v,0,self.getMaxHP()))
-        self.notify('decHP',v,isCrit)
+        self.notify('decHP',v)
         
         if self.isDead():
             self.dead()
