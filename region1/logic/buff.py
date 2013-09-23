@@ -46,7 +46,12 @@ class buff(gameobject):
             return
         
         for l in logic:
-            getattr(self.warrior,l[0])(*(l[1:]))
+            arr = l[1:]
+            try:
+                getattr(self.warrior,l[0])(*arr)
+            except:
+                arr.append(self.triggers[0])
+                getattr(self.warrior,l[0])(*arr)
             
     def setStack(self,s):
         if s >= self.stack:

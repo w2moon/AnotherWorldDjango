@@ -192,6 +192,9 @@ class warrior(gameobject):
         
         self.notify('incHP',v)
         
+    def decHPProperty(self,pro,rate,trigger):
+        self.decHP(trigger.getProperty(pro)*rate)
+        
     def decHP(self,v):
         
         if self.rand() < self.getProperty('Dodge'):
