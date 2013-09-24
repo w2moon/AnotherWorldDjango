@@ -25,6 +25,7 @@ lowesthp = 1
 opposite = 2
 left = 3
 right = 4
+randommulti = 5
 
 
 
@@ -90,6 +91,21 @@ class battlefield(object):
             del arr[k]
             num -= 1
             
+    def select_randommulti(self,objs,nature_type,num,out_array,selecthero,needalive):
+        arr = []    
+        for k in xrange(0,len(objs)):    
+            o = objs[k]
+            if o == None:
+                continue
+            if (needalive and not o.isDead()) or (not needalive and o.isDead()):
+                if k != data.HERO_IDX or selecthero:
+                    arr.append(o)
+            
+        while len(arr) > 0 and num > 0:
+            k = int(self.rand()*len(arr))
+            out_array.append(arr[k])
+            num -= 1
+            
     def select_lowesthp(self,objs,nature_type,num,out_array,selecthero,needalive):
         if num == -1:
             for o in objs:
@@ -124,6 +140,7 @@ class battlefield(object):
                 left:lambda:self.select_left(objs,nature_type,num,out_array,selecthero,needalive),
                 right:lambda:self.select_right(objs,nature_type,num,out_array,selecthero,needalive),
                 random:lambda:self.select_random(objs,nature_type,num,out_array,selecthero,needalive),
+                randommulti:lambda:self.select_randommulti(objs,nature_type,num,out_array,selecthero,needalive),
                 lowesthp:lambda:self.select_lowesthp(objs,nature_type,num,out_array,selecthero,needalive),
                # opposite:lambda:self.select_opposite(objs,nature_type,num,out_array,selecthero,needalive),
                 }
