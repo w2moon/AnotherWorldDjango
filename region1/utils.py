@@ -43,6 +43,23 @@ def create_role(rid,userid,name):
 def get_role(userid):
     return get_object(role,{'userid':userid})
 
+def req_friends(owner_userid,start,end):
+    pass
+
+def req_applicants(owner_userid,start,end):
+    pass
+
+def send_applicant(owner_userid,userid):
+    pass
+
+def delete_applicant(owner_userid,userid):
+    pass
+
+def apply_applicant(owner_userid,userid):
+    pass
+
+ 
+
 def log_create(userid):
     l = log.create(userid=userid,date=timezone.now(),ver=0)
     l.save()
